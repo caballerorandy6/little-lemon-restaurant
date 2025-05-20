@@ -1,26 +1,39 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-title: "Roboto Slab", serif;
+  --font-body: "Inter", sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+h1,
+h2,
+a,
+button,
+.logo-heading {
+  font-family: var(--font-title);
+  letter-spacing: 0.1em;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+body,
+span,
+p,
+li {
+  font-family: var(--font-body);
+  line-height: 1.6;
+  color: #333;
+}
+
+.nav-blur {
+  animation: blur linear both;
+  animation-timeline: scroll();
+  animation-range: 0 1000px;
+}
+
+@keyframes blur {
+  to {
+    box-shadow: 0 2px 20px rgba(255, 255, 255, 0.2);
+    background: rgba(255, 255, 255, 0.5);
+    backdrop-filter: blur(30px);
+    -webkit-backdrop-filter: blur(30px);
   }
-}
-
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
 }

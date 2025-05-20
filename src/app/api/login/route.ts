@@ -2,7 +2,6 @@ import { NextResponse, NextRequest } from "next/server";
 import { prisma } from "@/libs/prisma";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { cookies } from "next/headers";
 
 export async function POST(request: NextRequest) {
   try {
@@ -36,18 +35,8 @@ export async function POST(request: NextRequest) {
       expiresIn: "1d",
     });
 
-    // Set token in cookies
-    const cookieStore = await cookies();
-    cookieStore.set("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      maxAge: 60 * 60 * 24,
-      sameSite: "lax",
-      path: "/",
-    });
-
-    // Return user data without password
-    return NextResponse.json({
+    //Create response with user data and token
+    const response = NextResponse.json({
       message: "Login successful",
       token,
       user: {
@@ -57,6 +46,17 @@ export async function POST(request: NextRequest) {
         role: user.role,
       },
     });
+
+    // Set token in response headers
+    response.cookies.set("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 60 * 60 * 24,
+      sameSite: "lax",
+      path: "/",
+    });
+
+    return response;
   } catch (error) {
     console.error("[LOGIN_ERROR]", error);
     return NextResponse.json(

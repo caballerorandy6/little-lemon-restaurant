@@ -10,7 +10,7 @@ const stats = [
 ];
 
 const About = () => {
-  const ref = useSectionObserver({ sectionName: "Our Story" });
+  const ref = useSectionObserver({ sectionName: "Our History" });
 
   return (
     <section
@@ -18,17 +18,7 @@ const About = () => {
       ref={ref}
       className="mx-auto -mt-12 max-w-7xl px-6 sm:mt-0 lg:px-8 xl:-mt-8"
     >
-      <div className="mb-10 sm:mt-40 xl:mx-auto xl:max-w-7xl xl:px-8">
-        <Image
-          width={1000}
-          height={1000}
-          priority={false}
-          alt="Restaurant Interior"
-          src="/landing/restaurantInterior.webp"
-          className="aspect-5/2 w-full object-cover xl:rounded-3xl"
-        />
-      </div>
-      <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none">
+      <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none mb-10 sm:mt-40 ">
         <h2 className="text-4xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl">
           Our Story
         </h2>
@@ -62,6 +52,16 @@ const About = () => {
             </dl>
           </div>
         </div>
+      </div>
+      <div className="xl:mx-auto xl:max-w-7xl xl:px-8">
+        <Image
+          width={1000}
+          height={1000}
+          priority={false}
+          alt="Restaurant Interior"
+          src="/landing/restaurantInterior.webp"
+          className="aspect-5/2 w-full object-cover xl:rounded-3xl"
+        />
       </div>
     </section>
   );

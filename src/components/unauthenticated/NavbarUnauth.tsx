@@ -12,7 +12,7 @@ import { useLittleLemonStore } from "@/store/little-lemon-store";
 const navigation = [
   { name: "Home", href: "#home" },
   { name: "Menu", href: "#menu" },
-  { name: "Our Story", href: "#about" },
+  { name: "Our History", href: "#about" },
   { name: "Reservation", href: "#reservation" },
   { name: "Review", href: "#review" },
   { name: "Contact", href: "#contact" },
@@ -68,12 +68,19 @@ const NavbarUnauth = () => {
           ))}
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end space-x-4 items-center">
-          <Link
-            href="/login"
-            className="text-sm text-gray-900 bg-transparent hover:bg-gray-200 hover:text-green-600 rounded px-3 py-1 transition-colors"
-          >
-            Log in <span aria-hidden="true">&rarr;</span>
-          </Link>
+          <div className="py-6">
+            <Link href="/cart" onClick={() => setUnauthMobileMenuOpen(false)}>
+              <ShoppingCartIcon className="text-gray-600 h-8 w-8 hover:text-green-600 transition-colors" />
+            </Link>
+          </div>
+          <div>
+            <Link
+              href="/login"
+              className="text-sm text-gray-900 bg-transparent hover:bg-gray-200 hover:text-green-600 rounded px-3 py-1 transition-colors"
+            >
+              Log in <span aria-hidden="true">&rarr;</span>
+            </Link>
+          </div>
         </div>
       </nav>
       <Dialog
@@ -88,8 +95,8 @@ const NavbarUnauth = () => {
               <span className="sr-only">Little Lemon</span>
               <Image
                 priority
-                width={1000}
-                height={1000}
+                width={500}
+                height={500}
                 alt="Little Lemon Logo"
                 src="/logo/logo6.webp"
                 className="h-20 w-auto"
@@ -128,7 +135,10 @@ const NavbarUnauth = () => {
                 ))}
               </div>
               <div className="py-6">
-                <Link href="/cart">
+                <Link
+                  href="/cart"
+                  onClick={() => setUnauthMobileMenuOpen(false)}
+                >
                   <ShoppingCartIcon className="text-gray-600 h-8 w-8 hover:text-green-600 transition-colors" />
                 </Link>
               </div>

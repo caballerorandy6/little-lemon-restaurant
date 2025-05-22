@@ -10,7 +10,7 @@ export default function Navbar() {
   const { isAuthenticated, isLoadingAuth } = useAuth();
   const { user } = useLittleLemonStore();
 
-  console.log("Navbar", { isAuthenticated, isLoadingAuth, user });
+  //console.log("Navbar", { isAuthenticated, isLoadingAuth, user });
 
   if (isLoadingAuth) {
     return <div className="h-16" />;

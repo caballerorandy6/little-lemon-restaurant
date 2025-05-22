@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/libs/prisma";
 
+type Params = {
+  category: string;
+};
+
 export async function GET(
   request: Request,
-  { params }: { params: { category: string } }
+  { params }: { params: Promise<Params> }
 ) {
-  const category = params.category;
+  const { category } = await params;
 
   try {
     const categoryData = await prisma.category.findUnique({

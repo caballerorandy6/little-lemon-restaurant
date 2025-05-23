@@ -27,7 +27,7 @@ const NavbarAuth = () => {
 
   return (
     <header className="absolute inset-x-0 top-0 z-50">
-      <nav className="mx-auto flex items-center justify-between p-6 lg:px-8 fixed w-full transition-all nav-blur duration-300">
+      <nav className="mx-auto flex items-center justify-between px-2 font-bold fixed w-full transition-all nav-blur duration-300">
         {/* Logo */}
         <div className="flex lg:flex-1">
           <Link href="#" className="-m-1.5 p-1.5">

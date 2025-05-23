@@ -22,19 +22,18 @@ const navigation = [
   { name: "Menu", href: "/menu" },
   { name: "Reservations", href: "/reservations" },
   { name: "Reviews", href: "/reviews" },
-  
 ];
 
 export default function AdminDashboard() {
-  const { user, mobileMenuOpen, setMobileMenuOpen } = useLittleLemonStore();
+  const { user, openAdminDialog, setOpenAdminDialog } = useLittleLemonStore();
   const avatarUrl = userNameSimulation(user?.name || "No Name");
 
   return (
     <section className="min-h-screen mt-20">
       {/* Mobile Sidebar */}
       <Dialog
-        open={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
+        open={openAdminDialog}
+        onClose={() => setOpenAdminDialog(false)}
         className="relative z-50 lg:hidden "
       >
         <DialogBackdrop className="fixed inset-0 bg-black/50" />
@@ -42,7 +41,7 @@ export default function AdminDashboard() {
           <DialogPanel className="relative mr-16 flex w-full max-w-xs transform bg-white p-6">
             <TransitionChild>
               <button
-                onClick={() => setMobileMenuOpen(false)}
+                onClick={() => setOpenAdminDialog(false)}
                 className="absolute top-4 right-4"
               >
                 <XMarkIcon className="h-6 w-6" />
@@ -54,7 +53,7 @@ export default function AdminDashboard() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  onClick={() => setMobileMenuOpen(false)}
+                  onClick={() => setOpenAdminDialog(false)}
                   className="block text-lg text-gray-700 hover:text-green-800"
                 >
                   {item.name}
@@ -92,7 +91,7 @@ export default function AdminDashboard() {
 
       {/* Top bar mobile */}
       <div className="sticky top-0 z-40 flex items-center justify-between bg-white px-4 py-2 shadow lg:hidden">
-        <button onClick={() => setMobileMenuOpen(true)}>
+        <button onClick={() => setOpenAdminDialog(true)}>
           <Bars3Icon className="h-6 w-6 text-gray-700" />
         </button>
       </div>

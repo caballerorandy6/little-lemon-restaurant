@@ -6,30 +6,36 @@ import {
   Bars3Icon,
   XMarkIcon,
   ShoppingCartIcon,
+  ShoppingBagIcon,
 } from "@heroicons/react/24/outline";
 import { useLittleLemonStore } from "@/store/little-lemon-store";
 
 const navigation = [
-  { name: "Home", href: "#home" },
-  { name: "Menu", href: "#menu" },
-  { name: "Our History", href: "#about" },
-  { name: "Reservation", href: "#reservation" },
-  { name: "Review", href: "#review" },
-  { name: "Contact", href: "#contact" },
+  { name: "Home", href: "/#home" },
+  { name: "Menu", href: "/#public-menu" },
+  { name: "Our History", href: "/#about" },
+  { name: "Reservation", href: "/#reservation" },
+  { name: "Review", href: "/#review" },
+  { name: "Contact", href: "/#contact" },
 ];
 
 const NavbarUnauth = () => {
-  const { unauthMobileMenuOpen, setUnauthMobileMenuOpen, activeSection } =
-    useLittleLemonStore();
+  const {
+    unauthMobileMenuOpen,
+    setUnauthMobileMenuOpen,
+    activeSection,
+    cart,
+    getCartTotal,
+  } = useLittleLemonStore();
+
   return (
     <>
       <nav
         aria-label="Global"
-        className="mx-auto flex items-center justify-between p-6 lg:px-8 fixed w-full transition-all nav-blur duration-300 "
+        className="mx-auto flex items-center justify-between px-2 py-4 font-bold fixed w-full transition-all nav-blur duration-300 "
       >
         <div className="flex lg:flex-1">
-          <Link href="#" className="-m-1.5 p-1.5">
-            <span className="sr-only">Little Lemon</span>
+          <Link href="/#home" className="-m-1.5 p-1.5">
             <Image
               priority
               width={1000}
@@ -68,9 +74,12 @@ const NavbarUnauth = () => {
           ))}
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end space-x-4 items-center">
-          <div className="py-6">
-            <Link href="/cart" onClick={() => setUnauthMobileMenuOpen(false)}>
-              <ShoppingCartIcon className="text-gray-600 h-8 w-8 hover:text-green-600 transition-colors" />
+          <div className="ml-4 flow-root lg:ml-8">
+            <Link href="/cart" className="group -m-2 flex items-center p-2">
+              <ShoppingBagIcon className="size-6 shrink-0 font-bold" />
+              <span className="ml-2 text-sm font-medium text-white">
+                {getCartTotal(cart)}
+              </span>
             </Link>
           </div>
           <div>

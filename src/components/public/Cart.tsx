@@ -56,29 +56,30 @@ export default function Cart() {
               {cart.map((product, productIdx) => (
                 <li key={product.item.id} className="flex py-6 sm:py-10">
                   <Link
-                    href={`/meals-by-category/${product.item.category}/${product.item.name}`}
+                    href={`/meals-by-category/${encodeURIComponent(
+                      product.item.category.strCategory
+                    )}/${product.item.strMeal}`}
                     className="shrink-0"
                   >
                     <Image
                       priority={false}
                       width={500}
                       height={500}
-                      alt={product.item.name}
+                      alt={product.item.strMeal}
                       src={product.image}
                       className="size-24 rounded-md object-cover sm:size-48"
                     />
                   </Link>
-
                   <div className="ml-4 flex flex-1 flex-col justify-between sm:ml-6">
                     <div className="relative pr-9 sm:grid sm:grid-cols-2 sm:gap-x-6 sm:pr-0">
                       <div>
                         <div className="flex justify-between">
                           <h3 className="text-sm">
                             <Link
-                              href={product.item.name}
+                              href={product.item.strMeal}
                               className="font-medium text-gray-700 hover:text-gray-800"
                             >
-                              {product.item.name}
+                              {product.item.strMeal}
                             </Link>
                           </h3>
                         </div>
@@ -149,13 +150,13 @@ export default function Cart() {
             </ul>
             {cart.length > 0 ? (
               <div className="mt-6">
-                <button
-                  onClick={() => emptyCart()}
-                  type="submit"
-                  className="w-6/12 flex justify-center items-center rounded-md border border-transparent bg-red-600 px-4 py-3 text-base font-medium text-white shadow-xs hover:bg-red-500 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-50 focus:outline-hidden cursor-pointer transition-colors"
+                <Link
+                  onClick={emptyCart}
+                  href="/cart"
+                  className="sm:w-1/2 lg:w-1/3 flex justify-center items-center rounded-md border border-transparent bg-red-600 px-4 py-3 text-base font-medium text-white shadow-xs hover:bg-red-500 focus:ring-2 focus:ring-red-500 focus:ring-offset-2 focus:ring-offset-gray-50 focus:outline-hidden cursor-pointer transition-colors"
                 >
                   Empty Cart
-                </button>
+                </Link>
               </div>
             ) : (
               <h1>No items</h1>

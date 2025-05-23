@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/libs/prisma";
 
 type Params = Promise<{ name: string; category: string }>;
 
@@ -18,26 +19,29 @@ export async function GET(
   }
 
   try {
-    const response = await fetch(
-      `https://www.themealdb.com/api/json/v1/1/search.php?s=${encodeURIComponent(
-        name
-      )}`
-    );
+    const meal = await prisma.meal.findFirst({
+      where: {
+        strMeal: name,
+        category: {
+          strCategory: category,
+        },
+      },
+      include: {
+        category: true,
+        reviews: {
+          include: { user: true },
+        },
+      },
+    });
 
-    if (!response.ok) {
+    if (!meal) {
       return NextResponse.json(
-        { error: "Failed to fetch data" },
-        { status: 500 }
+        { error: `Not found meal with name: ${name} in category: ${category}` },
+        { status: 404 }
       );
     }
 
-    const data = await response.json();
-
-    if (!Array.isArray(data.meals) || data.meals.length === 0) {
-      return NextResponse.json({ error: "Meal not found" }, { status: 404 });
-    }
-
-    return NextResponse.json(data.meals[0], { status: 200 });
+    return NextResponse.json(meal);
   } catch (error) {
     console.error("Error fetching data:", error);
     return NextResponse.json(

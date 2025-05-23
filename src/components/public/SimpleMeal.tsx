@@ -9,7 +9,7 @@ import { useEffect } from "react";
 import { useParams } from "next/navigation";
 import Link from "next/link";
 import { CartItem } from "@/libs/types";
-import { MenuItem } from "@prisma/client";
+import { MealAPI } from "@/libs/types";
 
 export const faq = [];
 
@@ -35,6 +35,7 @@ export default function SingleMeal() {
     typeof params.name === "string" ? decodeURIComponent(params.name) : "";
 
   console.log("Cart", cart);
+  console.log("Meal", typeof meal?.createdAt);
 
   // Remove unwanted keys from the meal object
   const keysToRemove = ["tags", "video"];
@@ -44,15 +45,14 @@ export default function SingleMeal() {
 
   // Create a new object with the remaining keys
   const cartItem: CartItem = {
-    item: item as MenuItem,
+    item: item as MealAPI,
     quantity: specificItemQuantity,
-    image: meal?.image ?? "",
+    image: meal?.strMealThumb || "",
   };
 
-  const quantityItemCart = (itemId: number) => {
-    const item = cart.find((item) => item.item.id === itemId);
-    return item ? item.quantity : 0;
-  };
+  const quantityItemCart = cart.find(
+    (item: CartItem) => item.item.id === meal?.id
+  );
 
   useEffect(() => {
     if (
@@ -70,13 +70,13 @@ export default function SingleMeal() {
         <div className="lg:grid lg:grid-cols-7 lg:grid-rows-1 lg:gap-x-8 lg:gap-y-10 xl:gap-x-16">
           {/* Product image */}
           <div className="lg:col-span-4 lg:row-end-1">
-            {meal && meal.image ? (
+            {meal && meal.strMealThumb ? (
               <Image
                 priority
                 width={500}
                 height={500}
-                alt={meal.name}
-                src={meal.image}
+                alt={meal.strMeal}
+                src={meal.strMealThumb}
                 className="aspect-4/3 w-full rounded-lg bg-gray-100 object-cover"
               />
             ) : (
@@ -84,6 +84,14 @@ export default function SingleMeal() {
                 No image available
               </div>
             )}
+            <div className="mt-6">
+              <Link
+                href="/cart"
+                className="sm:w-1/2 lg:w-1/3 flex justify-center items-center rounded-md border border-transparent bg-blue-600 px-4 py-3 text-base font-medium text-white shadow-xs hover:bg-blue-500 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-gray-50 focus:outline-hidden cursor-pointer transition-colors"
+              >
+                Go to Cart
+              </Link>
+            </div>
           </div>
 
           {/* meal details */}
@@ -91,20 +99,23 @@ export default function SingleMeal() {
             <div className="flex flex-col-reverse">
               <div className="mt-4">
                 <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-                  {meal?.name}
+                  {meal?.strMeal}
                 </h1>
 
                 <h2 id="information-heading" className="sr-only">
                   meal information
                 </h2>
                 <p className="mt-2 text-sm text-gray-500">
-                  Last Update{" "}
-                  {meal?.updatedAt
-                    ? typeof meal.createdAt === "string"
-                      ? meal.createdAt
-                      : meal.createdAt.toLocaleString()
-                    : ""}{" "}
-                  (Tags: {meal?.tags})
+                  Last Update:{" "}
+                  {meal?.updatedAt &&
+                    new Date(meal.updatedAt).toLocaleDateString("en-US", {
+                      month: "long",
+                      day: "numeric",
+                      year: "numeric",
+                    })}
+                </p>
+                <p className="mt-2 text-sm text-gray-500">
+                  (Tags: {meal?.strTags})
                 </p>
               </div>
 
@@ -146,37 +157,39 @@ export default function SingleMeal() {
             </div>
 
             <div className="mt-10 border-t border-gray-200 pt-10">
-              <h3 className="text-sm font-medium text-gray-900">Quantity</h3>
+              <h3 className="text-sm font-bold text-gray-900">Quantity</h3>
               <p className="mt-4 text-blue-500 hover:text-blue-700 transition-colors text-sm">
-                ${quantityItemCart(cartItem.item.id)}
+                {quantityItemCart?.quantity ?? 0}
               </p>
             </div>
 
             <div className="mt-10 border-t border-gray-200 pt-10">
-              <h3 className="text-sm font-medium text-gray-900">Price</h3>
+              <h3 className="text-sm font-bold text-gray-900">Price</h3>
               <p className="mt-4 text-blue-500 hover:text-blue-700 transition-colors text-sm">
                 ${meal?.price}
               </p>
             </div>
 
             <div className="mt-10 border-t border-gray-200 pt-10">
-              <h3 className="text-sm font-medium text-gray-900">Watch Video</h3>
+              <h3 className="text-sm font-bold text-gray-900">Watch Video</h3>
               <Link
                 target="_blank"
-                href={meal?.video ?? "#"}
+                href={meal?.strYoutube ?? "#"}
                 className="mt-4 text-blue-500 hover:text-blue-700 transition-colors text-sm"
               >
-                {meal?.video ?? "No video available"}
+                {meal?.strYoutube ?? "No video available"}
               </Link>
             </div>
 
             <div className="mt-10 border-t border-gray-200 pt-10">
-              <h3 className="text-sm font-medium text-gray-900">Tags</h3>
-              <p className="mt-4 text-sm text-gray-500">{meal?.description} </p>
+              <h3 className="text-sm font-bold text-gray-900">Instructions</h3>
+              <p className="mt-4 text-sm text-gray-500">
+                {meal?.strInstructions}{" "}
+              </p>
             </div>
 
             <div className="mt-10 border-t border-gray-200 pt-10">
-              <h3 className="text-sm font-medium text-gray-900">Share</h3>
+              <h3 className="text-sm font-bold text-gray-900">Share</h3>
               <ul role="list" className="mt-4 flex items-center space-x-6">
                 <li>
                   <Link

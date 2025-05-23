@@ -6,6 +6,11 @@ import { CategoryAPI } from "@/libs/types";
 import { MealAPI } from "@/libs/types";
 
 interface LittleLemonStore {
+  openCategoryListDialog: boolean;
+  setOpenCategoryListDialog: (open: boolean) => void;
+  openAdminDialog: boolean;
+  setOpenAdminDialog: (open: boolean) => void;
+  getCartTotal: (cart: CartItem[]) => number;
   removeItems: (itemId: number) => void;
   updateQuantity: (itemId: number, quantity: number) => void;
   specificItemQuantity: number;
@@ -21,8 +26,7 @@ interface LittleLemonStore {
   setIsLoading: (loading: boolean) => void;
   isLoadingAuth: boolean;
   setIsLoadingAuth: (loading: boolean) => void;
-  mobileMenuOpen: boolean;
-  setMobileMenuOpen: (open: boolean) => void;
+
   activeSection: string;
   setActiveSection: (section: string) => void;
   user: User | null;
@@ -45,6 +49,16 @@ interface LittleLemonStore {
 export const useLittleLemonStore = create<LittleLemonStore>()(
   persist(
     (set) => ({
+      openCategoryListDialog: false,
+      setOpenCategoryListDialog: (open: boolean) =>
+        set({ openCategoryListDialog: open }),
+      openAdminDialog: false,
+      setOpenAdminDialog: (open: boolean) => set({ openAdminDialog: open }),
+      getCartTotal: (cart: CartItem[]) => {
+        return cart.reduce((total, item) => {
+          return total + item.quantity;
+        }, 0);
+      },
       specificItemQuantity: 0,
       setSpecificItemQuantity: (quantity: number) =>
         set({ specificItemQuantity: quantity }),
@@ -61,8 +75,6 @@ export const useLittleLemonStore = create<LittleLemonStore>()(
       setIsLoading: (loading: boolean) => set({ isLoading: loading }),
       isLoadingAuth: true,
       setIsLoadingAuth: (loading: boolean) => set({ isLoadingAuth: loading }),
-      mobileMenuOpen: false,
-      setMobileMenuOpen: (open: boolean) => set({ mobileMenuOpen: open }),
       activeSection: "Home",
       setActiveSection: (section: string) => set({ activeSection: section }),
       user: null,
@@ -195,23 +207,13 @@ export const useLittleLemonStore = create<LittleLemonStore>()(
           console.log("Fetched meal:", meal);
 
           const transformedMeal: MealAPI = {
-            id: meal.id,
-            strMeal: meal.strMeal,
-            strMealThumb: meal.strMealThumb,
-            category: meal.category ?? category,
-            categoryId: meal.categoryId ?? null,
-            strInstructions: meal.strInstructions ?? "No description available",
-            reviews: [],
-            strTags: meal.strTags ?? "No tags available",
-            strYoutube: meal.strYoutube ?? "No video available",
-            price: 10,
-            createdAt: new Date(),
-            updatedAt: new Date(),
+            ...meal,
+            price: meal.price ?? 10,
           };
 
           set({ meal: transformedMeal });
         } catch (error) {
-          console.error("Error fetchiing single meal:", error);
+          console.error("Error fetching single meal:", error);
         } finally {
           set({ isLoading: false });
         }

@@ -6,7 +6,6 @@ import {
   Bars3Icon,
   XMarkIcon,
   ShoppingCartIcon,
-  ShoppingBagIcon,
 } from "@heroicons/react/24/outline";
 import { useLittleLemonStore } from "@/store/little-lemon-store";
 
@@ -73,10 +72,10 @@ const NavbarUnauth = () => {
             </Link>
           ))}
         </div>
-        <div className="hidden lg:flex lg:flex-1 lg:justify-end space-x-4 items-center">
+        <div className="hidden lg:flex lg:flex-1 lg:justify-end items-center">
           <div className="ml-4 flow-root lg:ml-8">
             <Link href="/cart" className="group -m-2 flex items-center p-2">
-              <ShoppingBagIcon className="size-6 shrink-0 font-bold" />
+              <ShoppingCartIcon className="size-6 shrink-0 hover:text-green-600 transition-colors" />
               <span className="ml-2 text-sm font-medium text-white">
                 {getCartTotal(cart)}
               </span>

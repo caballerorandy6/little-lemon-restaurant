@@ -8,6 +8,7 @@ import { loginSchema, LoginFormData } from "@/libs/zod";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useLittleLemonStore } from "@/store/little-lemon-store";
+import { ErrorMessage } from "@hookform/error-message";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -96,11 +97,13 @@ export default function LoginForm() {
                     autoComplete="email"
                     className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm"
                   />
-                  {errors.email && (
-                    <p className="mt-1 text-sm text-red-500">
-                      {errors.email.message}
-                    </p>
-                  )}
+                  <ErrorMessage
+                    errors={errors}
+                    name="email"
+                    render={({ message }) => (
+                      <p className="text-red-500 text-sm mt-1">{message}</p>
+                    )}
+                  />
                 </div>
               </div>
 
@@ -119,11 +122,13 @@ export default function LoginForm() {
                     autoComplete="current-password"
                     className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm"
                   />
-                  {errors.password && (
-                    <p className="mt-1 text-sm text-red-500">
-                      {errors.password.message}
-                    </p>
-                  )}
+                  <ErrorMessage
+                    errors={errors}
+                    name="password"
+                    render={({ message }) => (
+                      <p className="text-red-500 text-sm mt-1">{message}</p>
+                    )}
+                  />
                 </div>
               </div>
 

@@ -8,6 +8,7 @@ import {
   ShoppingCartIcon,
 } from "@heroicons/react/24/outline";
 import { useLittleLemonStore } from "@/store/little-lemon-store";
+import ReservationNavLink from "@/components/public/ReservationNavLink";
 
 const navigation = [
   { name: "Home", href: "/#home" },
@@ -28,11 +29,8 @@ const NavbarUnauth = () => {
   } = useLittleLemonStore();
 
   return (
-    <>
-      <nav
-        aria-label="Global"
-        className="mx-auto flex items-center justify-between px-2 py-4 font-bold fixed w-full transition-all nav-blur duration-300 "
-      >
+    <header className="absolute inset-x-0 top-0 z-50">
+      <nav className="mx-auto flex items-center justify-between px-8 py-4 font-bold fixed w-full transition-all nav-blur duration-300">
         <div className="flex lg:flex-1">
           <Link href="/#home" className="-m-1.5 p-1.5">
             <Image
@@ -45,32 +43,35 @@ const NavbarUnauth = () => {
             />
           </Link>
         </div>
-        <div className="flex lg:hidden">
+        <div className="flex lg:hidden ">
           <button
             type="button"
             onClick={() => setUnauthMobileMenuOpen(true)}
             className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
           >
-            <span className="sr-only">Open main menu</span>
-            <Bars3Icon aria-hidden="true" className="size-6 cursor-pointer" />
+            <Bars3Icon className="size-6 cursor-pointer" />
           </button>
         </div>
         <div className="hidden lg:flex lg:gap-x-12">
-          {navigation.map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={clsx(
-                "relative text-sm  text-gray-500 font-sans transition-colors duration-300 ease-in-out hover:text-green-600 after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-green-600 after:transition-all after:duration-300 hover:after:w-full",
-                {
-                  "text-green-600 after:w-full font-semibold":
-                    activeSection === item.name,
-                }
-              )}
-            >
-              {item.name}
-            </Link>
-          ))}
+          {navigation.map((item) =>
+            item.name === "Reservation" ? (
+              <ReservationNavLink key={item.name} />
+            ) : (
+              <Link
+                key={item.name}
+                href={item.href}
+                className={clsx(
+                  "relative text-sm text-gray-500 font-sans transition-colors duration-300 ease-in-out hover:text-green-600 after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-green-600 after:transition-all after:duration-300 hover:after:w-full",
+                  {
+                    "text-green-600 after:w-full font-semibold":
+                      activeSection === item.name,
+                  }
+                )}
+              >
+                {item.name}
+              </Link>
+            )
+          )}
         </div>
         <div className="hidden lg:flex lg:flex-1 lg:justify-end items-center">
           <div className="ml-4 flow-root lg:ml-8">
@@ -164,7 +165,7 @@ const NavbarUnauth = () => {
           </div>
         </DialogPanel>
       </Dialog>
-    </>
+    </header>
   );
 };
 

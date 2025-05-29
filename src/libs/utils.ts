@@ -1,9 +1,36 @@
+// utils.ts (o como se llame tu archivo actual)
+
 import { Meal, Ingredient } from "@/libs/types";
 import { useLittleLemonStore } from "@/store/little-lemon-store";
-import { CartItem } from "@/libs/types";
+import { CartItem, CategoryAPI, MealAPI } from "@/libs/types";
 
-const cart = useLittleLemonStore.getState().cart;
+// ✅ Mover esto dentro de una función
+export const getCart = () => useLittleLemonStore.getState().cart;
 
+export const quantityItemCart = (itemId: number) => {
+  const cart = getCart();
+  const item = cart.find((item: CartItem) => item.item.id === itemId);
+  return item ? item.quantity : 0;
+};
+
+export const subTotal = () => {
+  const cart = getCart();
+  return cart
+    .reduce((acc, product) => acc + product.item.price * product.quantity, 0)
+    .toFixed(2);
+};
+
+export const taxCalculation = () => (Number(subTotal()) * 0.075).toFixed(2);
+export const shippingCalculation = () => (Number(subTotal()) * 0.05).toFixed(2);
+
+export const totalCalculation = () =>
+  (
+    Number(subTotal()) +
+    Number(taxCalculation()) +
+    Number(shippingCalculation())
+  ).toFixed(2);
+
+// Avatar simulation
 export const userNameSimulation = (user: string) => {
   const fullName = user;
   const initials = fullName
@@ -11,11 +38,10 @@ export const userNameSimulation = (user: string) => {
     .map((n) => n[0])
     .join("")
     .toUpperCase();
-  const avatarUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${initials}&backgroundColor=4ade80&fontColor=ffffff`;
-  return avatarUrl;
+  return `https://api.dicebear.com/7.x/initials/svg?seed=${initials}&backgroundColor=4ade80&fontColor=ffffff`;
 };
 
-// This function parses the ingredients from a meal object
+// Ingredient parsing
 export function parseIngredients(meal: Meal): Ingredient[] {
   const ingredients: Ingredient[] = [];
 
@@ -37,38 +63,63 @@ export function parseIngredients(meal: Meal): Ingredient[] {
   return ingredients;
 }
 
-// This function returns the quantity of a specific item in the cart
-export const quantityItemCart = (itemId: number) => {
-  const item = cart.find((item: CartItem) => item.item.id === itemId);
-  return item ? item.quantity : 0;
-};
+// getCategories function to fetch categories from the API
+export async function getCategories(): Promise<CategoryAPI[]> {
+  try {
+    const response = await fetch("/api/categories");
+    if (!response.ok) {
+      throw new Error("Failed to fetch categories");
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    return [];
+  }
+}
 
-// This function returns the total price of the cart
-export const calculateTotalPrice = (cart: CartItem[]) => {
-  return cart.reduce((total, item) => {
-    const itemPrice = parseFloat(item.item.price.toFixed(2));
-    const itemQuantity = item.quantity;
+//getMealsByCategory function to fetch meals by category from the API
+export async function getMealsByCategory(category: string): Promise<MealAPI[]> {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/meals-by-category/${category}`
+    );
 
-    return total + itemPrice * itemQuantity;
-  }, 0);
-};
+    if (!response.ok) {
+      throw new Error("Failed to fetch meals by category");
+    }
+    const data = await response.json();
+    return data.map((meal: MealAPI) => ({
+      ...meal,
+      price: meal.price ?? 10, // Default price if not provided
+    }));
+  } catch (error) {
+    console.error("Error fetching meals by category:", error);
+    return [];
+  }
+}
 
-//Subtotal calculation
-export const subTotal = cart
-  .reduce((acc, product) => {
-    return acc + product.item.price * product.quantity;
-  }, 0)
-  .toFixed(2);
+export async function getSingleMeal(
+  category: string,
+  name: string
+): Promise<MealAPI | null> {
+  try {
+    const response = await fetch(
+      `/api/meals-by-category/${category}/${encodeURIComponent(name)}`
+    );
 
-//Tax calculation
-export const taxCalculation = (Number(subTotal) * 0.075).toFixed(2);
+    if (!response.ok) {
+      throw new Error("Failed to fetch meal");
+    }
 
-//Shipping calculation
-export const shippingCalculation = (Number(subTotal) * 0.05).toFixed(2);
+    const meal = await response.json();
+    const mealWithPrice: MealAPI = {
+      ...meal,
+      price: meal.price ?? 10, // Default price if not provided
+    };
 
-//Total calculation
-export const totalCalculation = (
-  Number(subTotal) +
-  Number(taxCalculation) +
-  Number(shippingCalculation)
-).toFixed(2);
+    return mealWithPrice;
+  } catch (error) {
+    console.error("Error fetching single meal:", error);
+    return null;
+  }
+}

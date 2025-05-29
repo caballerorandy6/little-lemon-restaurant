@@ -5,6 +5,7 @@ import { XMarkIcon } from "@heroicons/react/24/outline";
 import { CategoryAPI } from "@/libs/types";
 import Image from "next/image";
 import Link from "next/link";
+import { useLittleLemonStore } from "@/store/little-lemon-store";
 
 interface CategoryModalProps {
   category: CategoryAPI;
@@ -12,6 +13,8 @@ interface CategoryModalProps {
 }
 
 const CategoryModal = ({ category, onClose }: CategoryModalProps) => {
+  const { setCategoryModalDialog } = useLittleLemonStore();
+
   return (
     <Dialog open={true} onClose={onClose} className="relative z-1">
       <DialogBackdrop className="fixed inset-0 bg-black/30" />
@@ -40,7 +43,10 @@ const CategoryModal = ({ category, onClose }: CategoryModalProps) => {
                 <p className="text-center sm:text-left flex items-center justify-center mt-10">
                   <Link
                     href={`/meals-by-category/${category.strCategory}`}
-                    onClick={onClose}
+                    onClick={() => {
+                      setCategoryModalDialog(false);
+                      onClose();
+                    }}
                     className="rounded-md bg-green-800 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-green-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 transition-colors"
                   >
                     See the {category.strCategory} Menu

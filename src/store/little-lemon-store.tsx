@@ -4,8 +4,13 @@ import { User } from "@/libs/types";
 import { CartItem } from "@/libs/types";
 import { CategoryAPI } from "@/libs/types";
 import { MealAPI } from "@/libs/types";
+import { getCategories, getMealsByCategory, getSingleMeal } from "@/libs/utils";
 
 interface LittleLemonStore {
+  landingCategoryDialog: boolean;
+  setLandingCategoryDialog: (open: boolean) => void;
+  categoryModalDialog: boolean;
+  setCategoryModalDialog: (open: boolean) => void;
   openCategoryListDialog: boolean;
   setOpenCategoryListDialog: (open: boolean) => void;
   openAdminDialog: boolean;
@@ -49,6 +54,12 @@ interface LittleLemonStore {
 export const useLittleLemonStore = create<LittleLemonStore>()(
   persist(
     (set) => ({
+      landingCategoryDialog: false,
+      setLandingCategoryDialog: (open: boolean) =>
+        set({ landingCategoryDialog: open }),
+      categoryModalDialog: false,
+      setCategoryModalDialog: (open: boolean) =>
+        set({ categoryModalDialog: open }),
       openCategoryListDialog: false,
       setOpenCategoryListDialog: (open: boolean) =>
         set({ openCategoryListDialog: open }),
@@ -143,18 +154,18 @@ export const useLittleLemonStore = create<LittleLemonStore>()(
       categories: [],
       setCategories: (categories: CategoryAPI[]) => set({ categories }),
 
-      // Fetch categories from the API
       fetchCategories: async () => {
         set({ isLoading: true });
         try {
-          const response = await fetch("/api/categories");
-          if (!response.ok) {
-            throw new Error("Failed to fetch categories");
-          }
-
-          const data = await response.json();
-
-          set({ categories: data as CategoryAPI[] });
+          const data = await getCategories();
+          set({
+            categories: data.map((cat: CategoryAPI) => ({
+              id: cat.id,
+              strCategory: cat.strCategory,
+              description: cat.description ?? "",
+              thumb: cat.thumb ?? "",
+            })),
+          });
         } catch (error) {
           console.error("Error fetching categories:", error);
         } finally {
@@ -164,26 +175,23 @@ export const useLittleLemonStore = create<LittleLemonStore>()(
 
       // Fetch items by category from the API
       fetchMealsByCategory: async (category: string) => {
-        set({ isLoading: true });
+        set({ isLoading: true, items: [] });
 
         try {
-          const response = await fetch(
-            `/api/meals-by-category/${encodeURIComponent(category)}`
-          );
+          const response = await getMealsByCategory(category);
 
-          if (!response.ok) {
-            throw new Error("Failed to fetch meals by category");
+          if (!response || response.length === 0) {
+            throw new Error("No meals found for this category");
           }
-          const data = await response.json();
 
-          const meals = data.map((meal: MealAPI) => ({
+          const data = response.map((meal: MealAPI) => ({
             ...meal,
-            price: meal.price ?? 10,
+            price: meal.price ?? 10, // Default price if not provided
           }));
-
-          set({ items: meals });
+          set({ items: data });
         } catch (error) {
           console.error("Error fetching meals by category:", error);
+          set({ items: [] });
         } finally {
           set({ isLoading: false });
         }
@@ -191,34 +199,23 @@ export const useLittleLemonStore = create<LittleLemonStore>()(
 
       // Fetch a single meal by category and name from the API
       fetchSingleMeal: async (category: string, name: string) => {
+        set({ isLoading: true, meal: null });
         try {
-          set({ isLoading: true });
-
-          console.log("fetching", `/api/meals-by-category/${category}/${name}`);
-
-          const response = await fetch(
-            `/api/meals-by-category/${category}/${encodeURIComponent(name)}`
-          );
-          if (!response.ok) {
-            throw new Error("Failed to fetch from API");
+          const meal = await getSingleMeal(category, name);
+          if (!meal) {
+            throw new Error("Meal not found");
           }
-
-          const meal = await response.json();
-          console.log("Fetched meal:", meal);
-
-          const transformedMeal: MealAPI = {
-            ...meal,
-            price: meal.price ?? 10,
-          };
-
-          set({ meal: transformedMeal });
+          set({ meal });
         } catch (error) {
           console.error("Error fetching single meal:", error);
+          set({ meal: null });
         } finally {
           set({ isLoading: false });
         }
       },
+
       meal: null,
+
       updateQuantity: (itemId: number, newQuantity: number) => {
         set((state) => {
           const updatedCart = state.cart.map((ci) =>

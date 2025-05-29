@@ -1,7 +1,7 @@
 import Hero from "@/components/unauthenticated/Hero";
 import PublicMenu from "@/components/public/PublicMenu";
 import About from "@/components/unauthenticated/About";
-import Reservation from "@/components/public/Reservation";
+import ReservationForm from "@/components/public/ReservationForm";
 import Review from "@/components/public/Review";
 import Contact from "@/components/public/Contact";
 import ScrollToHandler from "@/components/public/ScrollToHandler";
@@ -17,7 +17,7 @@ const LandingPage = () => {
       <Hero />
       <PublicMenu />
       <About />
-      <Reservation />
+      <ReservationForm />
       <Review />
       <Contact />
     </main>

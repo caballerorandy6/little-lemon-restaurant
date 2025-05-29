@@ -20,14 +20,11 @@ const NavbarAuth = () => {
     useLittleLemonStore();
 
   const avatarUrl = "/admin/admin.avif";
-
   return (
     <header className="absolute inset-x-0 top-0 z-50">
-      <nav className="mx-auto flex items-center justify-between px-2 font-bold fixed w-full transition-all nav-blur duration-300">
-        {/* Logo */}
+      <nav className="mx-auto flex items-center justify-between px-8 py-4 font-bold fixed w-full transition-all nav-blur duration-300">
         <div className="flex lg:flex-1">
-          <Link href="#" className="-m-1.5 p-1.5">
-            <span className="sr-only">Little Lemon</span>
+          <Link href="/#home" className="-m-1.5 p-1.5">
             <Image
               priority
               width={1000}
@@ -46,9 +43,10 @@ const NavbarAuth = () => {
               key={item.name}
               href={item.href}
               className={clsx(
-                "relative text-sm font-medium text-gray-600 font-sans transition-colors duration-300 ease-in-out hover:text-green-800 after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-green-800 after:transition-all after:duration-300 hover:after:w-full",
+                "relative text-sm text-gray-500 font-sans transition-colors duration-300 ease-in-out hover:text-green-600 after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-green-600 after:transition-all after:duration-300 hover:after:w-full",
                 {
-                  "text-green-800 after:w-full": activeSection === item.name,
+                  "text-green-600 after:w-full font-semibold":
+                    activeSection === item.name,
                 }
               )}
             >

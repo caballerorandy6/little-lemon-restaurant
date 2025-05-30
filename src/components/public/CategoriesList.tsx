@@ -66,7 +66,6 @@ export default function CategoriesList() {
                   onClick={() => setOpenCategoryListDialog(false)}
                   className="-m-2.5 p-2.5"
                 >
-                  <span className="sr-only">Close sidebar</span>
                   <XMarkIcon className="h-6 w-6 text-gray-700" />
                 </button>
               </div>
@@ -84,10 +83,7 @@ export default function CategoriesList() {
                 />
               </div>
               <nav className="flex flex-1 flex-col pt-6">
-                <ul
-                  role="list"
-                  className="flex flex-1 flex-col gap-y-6 overflow-y-auto"
-                >
+                <ul className="flex flex-1 flex-col gap-y-6 overflow-y-auto">
                   {categories.map((item) => (
                     <li key={item.id}>
                       <button
@@ -122,7 +118,7 @@ export default function CategoriesList() {
       >
         <div className="flex flex-col gap-y-5 overflow-y-auto px-6 py-8">
           <nav className="flex flex-1 flex-col">
-            <ul role="list" className="flex flex-1 flex-col gap-y-6">
+            <ul className="flex flex-1 flex-col overflow-y-scroll">
               {categories.map((item) => (
                 <li key={item.id}>
                   <button
@@ -133,9 +129,9 @@ export default function CategoriesList() {
                     }}
                     className={clsx(
                       selectedCategory?.id === item.id
-                        ? "bg-yellow-100 text-yellow-700"
-                        : "text-gray-700 hover:bg-yellow-50 hover:text-yellow-700",
-                      "group flex gap-x-3 rounded-xl p-3 text-base font-semibold transition-colors"
+                        ? "bg-green-200 text-green-700"
+                        : "text-gray-500 hover:bg-green-100 hover:text-green-700",
+                      "group flex gap-x-3 rounded-xl p-3 text-base font-semibold transition-colors w-full my-0.5"
                     )}
                   >
                     {item.strCategory}
@@ -160,7 +156,7 @@ export default function CategoriesList() {
 
       {/* Main content */}
       <main className="sm:pl-72">
-        <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8 border border-gray-300/50 rounded-4xl shadow-md bg-white">
+        <div className="mx-auto max-w-7xl px-6 py-16 lg:px-8">
           {!selectedCategory ||
           isLoading ||
           isPending ||

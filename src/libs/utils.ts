@@ -1,5 +1,3 @@
-// utils.ts (o como se llame tu archivo actual)
-
 import { Meal, Ingredient } from "@/libs/types";
 import { useLittleLemonStore } from "@/store/little-lemon-store";
 import { CartItem, CategoryAPI, MealAPI } from "@/libs/types";
@@ -98,6 +96,7 @@ export async function getMealsByCategory(category: string): Promise<MealAPI[]> {
   }
 }
 
+// getSingleMeal function to fetch a single meal by category and name from the API
 export async function getSingleMeal(
   category: string,
   name: string

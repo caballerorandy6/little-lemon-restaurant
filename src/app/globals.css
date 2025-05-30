@@ -20,7 +20,7 @@ p,
 li {
   font-family: var(--font-body);
   line-height: 1.6;
-  color: #333;
+  /* color: #333; */
 }
 
 .nav-blur {

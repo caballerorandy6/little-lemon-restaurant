@@ -35,7 +35,7 @@ export default function LoginForm() {
 
       const result = await response.json();
       if (!response.ok) {
-        toast.error("Login failed");
+        toast.error("Login failed, please check your password or email");
         return;
       }
 
@@ -141,7 +141,7 @@ export default function LoginForm() {
                 </Link>
 
                 <Link
-                  href="#"
+                  href="/forgot-password"
                   className="text-sm font-semibold text-indigo-600 hover:text-indigo-500"
                 >
                   Forgot password?

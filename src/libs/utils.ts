@@ -64,7 +64,9 @@ export function parseIngredients(meal: Meal): Ingredient[] {
 // getCategories function to fetch categories from the API
 export async function getCategories(): Promise<CategoryAPI[]> {
   try {
-    const response = await fetch("/api/categories");
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/categories`
+    );
     if (!response.ok) {
       throw new Error("Failed to fetch categories");
     }

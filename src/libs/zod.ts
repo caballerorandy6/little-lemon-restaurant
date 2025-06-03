@@ -52,8 +52,18 @@ export const resetPasswordSchema = z
     path: ["confirmPassword"],
   });
 
+export const reservationSchema = z.object({
+  date: z.string().min(1, "Date is required"),
+  time: z.string().min(1, "Time is required"),
+  guests: z.coerce
+    .number({ invalid_type_error: "Must be a number" })
+    .min(1, "At least 1 guest")
+    .max(50, "Maximum 50 guests"),
+});
+
 export type UserFormData = z.infer<typeof userSchema>;
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type ContactFormData = z.infer<typeof contactSchema>;
 export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
+export type ReservationFormData = z.infer<typeof reservationSchema>;

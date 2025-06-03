@@ -1,6 +1,6 @@
 import { Meal, Ingredient } from "@/libs/types";
 import { useLittleLemonStore } from "@/store/little-lemon-store";
-import { CartItem, CategoryAPI, MealAPI } from "@/libs/types";
+import { CartItem, CategoryAPI, MealAPI, ReservationAPI } from "@/libs/types";
 
 // ✅ Mover esto dentro de una función
 export const getCart = () => useLittleLemonStore.getState().cart;
@@ -121,6 +121,81 @@ export async function getSingleMeal(
     return mealWithPrice;
   } catch (error) {
     console.error("Error fetching single meal:", error);
+    return null;
+  }
+}
+
+//Get All Single User Reservation
+export async function getUserReservations(): Promise<ReservationAPI[] | null> {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/reservations`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // Include cookies for authentication
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Failed to fetch reservations");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching user reservations:", error);
+    return null;
+  }
+}
+
+//Delete Reservation by ID
+export async function deleteReservationById(id: number) {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/reservations?id=${id}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include", // Include cookies for authentication
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to delete reservation");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error deleting reservation:", error);
+    return null;
+  }
+}
+
+//Update Reservation by ID
+export async function updateReservationById(data: ReservationAPI) {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/reservations`,
+      {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data),
+        credentials: "include", // Include cookies for authentication
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to update reservation");
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error updating reservation:", error);
     return null;
   }
 }

@@ -101,10 +101,6 @@ export default function SingleMeal() {
                 <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
                   {meal?.strMeal}
                 </h1>
-
-                <h2 id="information-heading" className="sr-only">
-                  meal information
-                </h2>
                 <p className="mt-2 text-sm text-gray-500">
                   Last Update:{" "}
                   {meal?.updatedAt &&
@@ -158,16 +154,12 @@ export default function SingleMeal() {
 
             <div className="mt-10 border-t border-gray-200 pt-10">
               <h3 className="text-sm font-bold text-gray-900">Quantity</h3>
-              <p className="mt-4 text-blue-500 hover:text-blue-700 transition-colors text-sm">
-                {quantityItemCart?.quantity ?? 0}
-              </p>
+              <p className="mt-4 text-sm">{quantityItemCart?.quantity ?? 0}</p>
             </div>
 
             <div className="mt-10 border-t border-gray-200 pt-10">
               <h3 className="text-sm font-bold text-gray-900">Price</h3>
-              <p className="mt-4 text-blue-500 hover:text-blue-700 transition-colors text-sm">
-                ${meal?.price}
-              </p>
+              <p className="mt-4 text-sm">${meal?.price}</p>
             </div>
 
             <div className="mt-10 border-t border-gray-200 pt-10">

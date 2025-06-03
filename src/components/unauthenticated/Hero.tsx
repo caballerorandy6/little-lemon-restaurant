@@ -70,14 +70,14 @@ export default function Hero() {
                   </p>
                   <div className="mt-10 flex items-center gap-x-6">
                     <Link
-                      href="#"
+                      href="/#reservation"
                       className="rounded-md bg-green-800 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-green-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 transition-colors"
                     >
                       Order Now
                     </Link>
                     <Link
-                      href="/#menu"
-                      className="text-sm/6 font-semibold text-gray-900 hover:bg-yellow-200 px-3.5 py-2 shadow-xs bg-yellow-300 tfocus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 transition-colors rounded-md"
+                      href="/#public-menu"
+                      className="text-sm/6 font-semibold text-white hover:bg-yellow-500 px-3.5 py-2 shadow-xs bg-yellow-400 tfocus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-500 transition-colors rounded-md"
                     >
                       Our Menu <span aria-hidden="true">→</span>
                     </Link>

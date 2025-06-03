@@ -12,7 +12,7 @@ export type User = {
   email: string;
   password: string;
   role: Role;
-  reservations?: Reservation[];
+  reservations?: ReservationAPI[];
   reviews?: Review[];
   createdAt: string; // o Date
   updatedAt: string; // o Date
@@ -120,14 +120,14 @@ export type Review = {
   meal?: MealAPI;
 };
 
-export type Reservation = {
+export type ReservationAPI = {
   id: number;
   userId: number;
   date: string; // o Date
   time: string;
   guests: number;
-  createdAt: string; // o Date
-  user?: User;
+  // createdAt: string; // o Date
+  // user?: User;
 };
 
 export type Ingredient = {

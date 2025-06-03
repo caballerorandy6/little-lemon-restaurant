@@ -22,7 +22,7 @@ const NavbarAuth = () => {
   const avatarUrl = "/admin/admin.avif";
   return (
     <header className="absolute inset-x-0 top-0 z-50">
-      <nav className="mx-auto flex items-center justify-between px-8 py-4 font-bold fixed w-full transition-all nav-blur duration-300">
+      <nav className="mx-auto flex items-center justify-between px-8 py-4 fixed w-full transition-all nav-blur duration-300">
         <div className="flex lg:flex-1">
           <Link href="/#home" className="-m-1.5 p-1.5">
             <Image

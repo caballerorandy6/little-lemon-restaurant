@@ -2,13 +2,10 @@ import Image from "next/image";
 import Link from "next/link";
 import clsx from "clsx";
 import { Dialog, DialogPanel } from "@headlessui/react";
-import {
-  Bars3Icon,
-  XMarkIcon,
-  ShoppingCartIcon,
-} from "@heroicons/react/24/outline";
+import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useLittleLemonStore } from "@/store/little-lemon-store";
 import ReservationNavLink from "@/components/public/ReservationNavLink";
+import ShoppingCart from "@/components/public/ShoppingCart";
 
 const navigation = [
   { name: "Home", href: "/#home" },
@@ -20,17 +17,12 @@ const navigation = [
 ];
 
 const NavbarUnauth = () => {
-  const {
-    unauthMobileMenuOpen,
-    setUnauthMobileMenuOpen,
-    activeSection,
-    cart,
-    getCartTotal,
-  } = useLittleLemonStore();
+  const { unauthMobileMenuOpen, setUnauthMobileMenuOpen, activeSection } =
+    useLittleLemonStore();
 
   return (
     <header className="absolute inset-x-0 top-0 z-50">
-      <nav className="mx-auto flex items-center justify-between px-8 py-4 font-bold fixed w-full transition-all nav-blur duration-300">
+      <nav className="mx-auto flex items-center justify-between px-8 py-4 fixed w-full transition-all nav-blur duration-300">
         <div className="flex lg:flex-1">
           <Link href="/#home" className="-m-1.5 p-1.5">
             <Image
@@ -73,15 +65,8 @@ const NavbarUnauth = () => {
             )
           )}
         </div>
-        <div className="hidden lg:flex lg:flex-1 lg:justify-end items-center">
-          <div className="ml-4 flow-root lg:ml-8">
-            <Link href="/cart" className="group -m-2 flex items-center p-2">
-              <ShoppingCartIcon className="size-6 shrink-0 hover:text-green-600 transition-colors" />
-              <span className="ml-2 text-sm font-medium text-white">
-                {getCartTotal(cart)}
-              </span>
-            </Link>
-          </div>
+        <div className="hidden lg:flex lg:flex-1 lg:justify-end items-center gap-4">
+          <ShoppingCart />
           <div>
             <Link
               href="/login"
@@ -100,7 +85,11 @@ const NavbarUnauth = () => {
         <div className="fixed inset-0 z-50" />
         <DialogPanel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
           <div className="flex items-center justify-between">
-            <Link href="#" className="-m-1.5 p-1.5">
+            <Link
+              href="/#home"
+              className="-m-1.5 p-1.5"
+              onClick={() => setUnauthMobileMenuOpen(false)}
+            >
               <span className="sr-only">Little Lemon</span>
               <Image
                 priority
@@ -144,12 +133,7 @@ const NavbarUnauth = () => {
                 ))}
               </div>
               <div className="py-6">
-                <Link
-                  href="/cart"
-                  onClick={() => setUnauthMobileMenuOpen(false)}
-                >
-                  <ShoppingCartIcon className="text-gray-600 h-8 w-8 hover:text-green-600 transition-colors" />
-                </Link>
+                <ShoppingCart />
               </div>
               <div className="py-6">
                 <Link

@@ -18,10 +18,11 @@ const About = () => {
       ref={ref}
       className="mx-auto -mt-12 max-w-7xl px-6 sm:mt-0 lg:px-8 xl:-mt-8"
     >
-      <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none mb-10 sm:mt-40 ">
-        <h2 className="text-4xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl">
-          Our Story
+      <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none mb-10 sm:mt-40">
+        <h2 className="text-4xl font-bold tracking-tight text-center text-gray-900 sm:text-5xl mb-20">
+          Our History
         </h2>
+
         <div className="mt-6 flex flex-col gap-x-8 gap-y-20 lg:flex-row">
           <div className="lg:w-full lg:max-w-2xl lg:flex-auto">
             <p className="text-lg/8 text-gray-600">
@@ -39,6 +40,7 @@ const About = () => {
               experience filled with flavor, comfort, and connection.
             </p>
           </div>
+
           <div className="lg:flex lg:flex-auto lg:justify-center">
             <dl className="w-64 space-y-8 xl:w-80">
               {stats.map((stat) => (
@@ -53,6 +55,7 @@ const About = () => {
           </div>
         </div>
       </div>
+
       <div className="xl:mx-auto xl:max-w-7xl xl:px-8">
         <Image
           width={1000}

@@ -3,10 +3,27 @@ import { persist } from "zustand/middleware";
 import { User } from "@/libs/types";
 import { CartItem } from "@/libs/types";
 import { CategoryAPI } from "@/libs/types";
-import { MealAPI } from "@/libs/types";
-import { getCategories, getMealsByCategory, getSingleMeal } from "@/libs/utils";
+import { MealAPI, ReservationAPI } from "@/libs/types";
+import {
+  getCategories,
+  getMealsByCategory,
+  getSingleMeal,
+  getUserReservations,
+  deleteReservationById as deleteReservationByIdAPI,
+  updateReservationById as updateReservationByIdAPI,
+} from "@/libs/utils";
 
 interface LittleLemonStore {
+  editingId: number | null;
+  setEditingId: (id: number | null) => void;
+  editReservationValues: ReservationAPI | null;
+  setEditReservationValues: (values: ReservationAPI | null) => void;
+  updateReservation: (data: ReservationAPI) => Promise<void>;
+  deleteReservationById: (reservationId: number) => Promise<void>;
+  userReservations: ReservationAPI[];
+  fetchUserReservations: () => Promise<void>;
+  avatarMenuOpen: boolean;
+  setAvatarMenuOpen: (open: boolean) => void;
   landingCategoryDialog: boolean;
   setLandingCategoryDialog: (open: boolean) => void;
   categoryModalDialog: boolean;
@@ -31,7 +48,6 @@ interface LittleLemonStore {
   setIsLoading: (loading: boolean) => void;
   isLoadingAuth: boolean;
   setIsLoadingAuth: (loading: boolean) => void;
-
   activeSection: string;
   setActiveSection: (section: string) => void;
   user: User | null;
@@ -54,6 +70,17 @@ interface LittleLemonStore {
 export const useLittleLemonStore = create<LittleLemonStore>()(
   persist(
     (set) => ({
+      editingId: null,
+      setEditingId: (id: number | null) => set({ editingId: id }),
+      editReservationValues: {
+        date: "",
+        time: "",
+        guests: 0,
+      } as ReservationAPI | null,
+      setEditReservationValues: (values: ReservationAPI | null) =>
+        set({ editReservationValues: values }),
+      avatarMenuOpen: false,
+      setAvatarMenuOpen: (open: boolean) => set({ avatarMenuOpen: open }),
       landingCategoryDialog: false,
       setLandingCategoryDialog: (open: boolean) =>
         set({ landingCategoryDialog: open }),
@@ -215,6 +242,71 @@ export const useLittleLemonStore = create<LittleLemonStore>()(
       },
 
       meal: null,
+
+      fetchUserReservations: async () => {
+        set({ isLoading: true, userReservations: [] });
+        try {
+          let reservations = await getUserReservations();
+
+          if (!reservations || reservations.length === 0) {
+            reservations = [];
+          }
+          set({ userReservations: reservations });
+        } catch (error) {
+          console.error("Error fetching user reservations:", error);
+          set({ userReservations: [] });
+        } finally {
+          set({ isLoading: false });
+        }
+      },
+
+      deleteReservationById: async (reservationId: number) => {
+        set({ isLoading: true });
+        try {
+          const respnse = await deleteReservationByIdAPI(reservationId);
+          if (!respnse) {
+            throw new Error("Failed to delete reservation");
+          }
+
+          // Update userReservations after deletion
+          set((state) => ({
+            userReservations: state.userReservations.filter(
+              (reservation) => reservation.id !== reservationId
+            ),
+          }));
+        } catch (error) {
+          console.error("Error deleting reservation:", error);
+          throw error; //
+        } finally {
+          set({ isLoading: false });
+        }
+      },
+
+      updateReservation: async (data: ReservationAPI) => {
+        set({ isLoading: true });
+        try {
+          const response = await updateReservationByIdAPI(data);
+
+          if (!response) {
+            throw new Error("Failed to update reservation");
+          }
+
+          set((state) => ({
+            userReservations: state.userReservations.map((reservation) =>
+              reservation.id === response.id ? response : reservation
+            ),
+            editingId: null,
+            editReservationValues: null,
+          }));
+        } catch (error) {
+          console.error("Error updating reservation:", error);
+          throw error;
+        } finally {
+          set({ isLoading: false });
+        }
+      },
+
+      userReservations: [],
 
       updateQuantity: (itemId: number, newQuantity: number) => {
         set((state) => {

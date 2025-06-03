@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { verifyToken } from "./verifyToken";
+import { verifyToken } from "@/libs/auth/verifyToken";
 import { prisma } from "@/libs/prisma";
 
 export async function getCurrentUser() {

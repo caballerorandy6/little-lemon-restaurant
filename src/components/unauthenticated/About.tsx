@@ -18,7 +18,7 @@ const About = () => {
       ref={ref}
       className="mx-auto -mt-12 max-w-7xl px-6 sm:mt-0 lg:px-8 xl:-mt-8"
     >
-      <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none mb-10 sm:mt-40">
+      <div className="mx-auto max-w-2xl lg:mx-0 lg:max-w-none mb-10 sm:mt-20">
         <h2 className="text-4xl font-bold tracking-tight text-center text-gray-900 sm:text-5xl mb-20">
           Our History
         </h2>
@@ -63,7 +63,7 @@ const About = () => {
           priority={false}
           alt="Restaurant Interior"
           src="/landing/restaurantInterior.webp"
-          className="aspect-5/2 w-full object-cover xl:rounded-3xl"
+          className="aspect-5/2 w-full object-cover rounded-lg"
         />
       </div>
     </section>

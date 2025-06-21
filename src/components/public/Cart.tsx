@@ -10,17 +10,26 @@ import {
 import { useLittleLemonStore } from "@/store/little-lemon-store";
 import Image from "next/image";
 import Link from "next/link";
+import { useAuth } from "@/libs/hooks/useAuth";
+import Spinner from "./Spinner";
 
 export default function Cart() {
   const { cart, updateQuantity, emptyCart, removeItems } =
     useLittleLemonStore();
+  const { isLoadingAuth } = useAuth();
 
-  console.log("cart", cart);
+  if (isLoadingAuth) {
+    return (
+      <div className="flex justify-center items-center min-h-screen">
+        <Spinner />
+      </div>
+    );
+  }
 
   //Subtotal calculation
   const subTotal = cart
     .reduce((acc, product) => {
-      return acc + product.item.price * product.quantity;
+      return acc + product?.item?.price * product.quantity;
     }, 0)
     .toFixed(2);
 
@@ -54,19 +63,22 @@ export default function Cart() {
               className="divide-y divide-gray-200 border-t border-b border-gray-200"
             >
               {cart.map((product, productIdx) => (
-                <li key={product.item.id} className="flex py-6 sm:py-10">
+                <li
+                  key={product?.item?.id + Math.random()}
+                  className="flex py-6 sm:py-10"
+                >
                   <Link
                     href={`/meals-by-category/${encodeURIComponent(
-                      product.item.category.strCategory
-                    )}/${product.item.strMeal}`}
+                      product?.item?.category?.strCategory
+                    )}/${product?.item?.strMeal}`}
                     className="shrink-0"
                   >
                     <Image
-                      priority={false}
+                      priority
                       width={500}
                       height={500}
-                      alt={product.item.strMeal}
-                      src={product.image}
+                      alt={product?.item?.strMeal || "Meal Image"}
+                      src={product?.image}
                       className="size-24 rounded-md object-cover sm:size-48"
                     />
                   </Link>
@@ -76,15 +88,18 @@ export default function Cart() {
                         <div className="flex justify-between">
                           <h3 className="text-sm">
                             <Link
-                              href={product.item.strMeal}
+                              href={`/meals-by-category/${encodeURIComponent(
+                                product?.item?.category?.strCategory ||
+                                  "unknown"
+                              )}/${encodeURIComponent(product?.item?.strMeal || "meal")}`}
                               className="font-medium text-gray-700 hover:text-gray-800"
                             >
-                              {product.item.strMeal}
+                              {product?.item?.strMeal}
                             </Link>
                           </h3>
                         </div>
                         <p className="mt-1 text-sm font-medium text-gray-900">
-                          {product.item.price}
+                          {product?.item?.price}
                         </p>
                       </div>
 
@@ -92,8 +107,8 @@ export default function Cart() {
                         <div className="grid w-full max-w-16 grid-cols-1">
                           <select
                             name={`quantity-${productIdx}`}
-                            aria-label={`Quantity, ${product.quantity}`}
-                            value={product.quantity}
+                            aria-label={`Quantity, ${product?.quantity}`}
+                            value={product?.quantity}
                             className="col-start-1 row-start-1 appearance-none rounded-md bg-white py-1.5 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
                             onChange={(e) => {
                               const newQuantity = Number(e.target.value);

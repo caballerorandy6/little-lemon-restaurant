@@ -24,6 +24,7 @@ export async function generateMetadata(props: { params: Params }) {
 
 export default function Page({ params }: { params: Params }) {
   const { category } = use(params);
+
   if (!category) {
     notFound();
   }

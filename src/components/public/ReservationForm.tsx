@@ -52,7 +52,7 @@ const ReservationForm = () => {
     <section
       id="reservation"
       ref={ref}
-      className="bg-white p-8 rounded-lg shadow-md max-w-xl mx-auto mt-40 mb-20"
+      className="bg-white/80 backdrop-blur p-8 rounded-lg shadow-md max-w-xl mx-auto mt-40 mb-20"
     >
       <div className="mx-auto max-w-2xl text-center">
         <h2 className="text-4xl font-semibold tracking-tight text-gray-900 sm:text-5xl">

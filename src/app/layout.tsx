@@ -3,6 +3,8 @@ import { Roboto_Slab, Inter } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import Navbar from "@/components/public/Navbar";
+import StoreHydration from "@/components/public/StoreHydration";
+import { getCategories, getMealsByCategory, getSingleMeal } from "@/libs/utils";
 
 const robotoSlab = Roboto_Slab({
   subsets: ["latin"],
@@ -26,12 +28,30 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const categoriesPromise = getCategories();
+  const mealsByCategoryPromise = categoriesPromise.then((categories) =>
+    Promise.all(
+      categories.map((category) => getMealsByCategory(category.strCategory))
+    ).then((mealsByCategory) => mealsByCategory.flat())
+  );
+  const singleMealPromise = Promise.all([
+    categoriesPromise,
+    mealsByCategoryPromise,
+  ]).then(([categories, meals]) =>
+    getSingleMeal(categories[0]?.strCategory || "", meals[0]?.strMeal || "")
+  );
+
   return (
     <html lang="en" className="!scroll-smooth" suppressHydrationWarning>
       <body
         className={`${robotoSlab.variable} ${inter.variable} antialiased text-pretty font-body`}
       >
         <Navbar />
+        <StoreHydration
+          categoriesPromise={categoriesPromise}
+          mealsByCategoryPromise={mealsByCategoryPromise}
+          singleMealPromise={singleMealPromise}
+        />
         {children}
         <Toaster position="bottom-right" richColors closeButton={true} />
       </body>

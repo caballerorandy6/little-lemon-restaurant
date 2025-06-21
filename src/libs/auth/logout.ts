@@ -1,9 +1,11 @@
 import { toast } from "sonner";
 import { useLittleLemonStore } from "@/store/little-lemon-store";
+import { syncCartWithBackend } from "@/libs/utils";
 
 export async function logout() {
   const token = localStorage.getItem("token");
-  const { setIsAuthenticated, setUser } = useLittleLemonStore.getState();
+  const { setIsAuthenticated, setUser, emptyCart } =
+    useLittleLemonStore.getState();
 
   if (!token) {
     console.error("No token found in local storage");
@@ -11,6 +13,8 @@ export async function logout() {
   }
 
   try {
+    await syncCartWithBackend(); // Ensure the cart is synced before logging out
+
     const response = await fetch("/api/logout", {
       method: "POST",
       headers: {
@@ -27,6 +31,7 @@ export async function logout() {
     localStorage.removeItem("token");
     setIsAuthenticated(false);
     setUser(null);
+    emptyCart();
 
     toast.success(`Logout successful ${response.statusText}`);
     window.location.href = "/";

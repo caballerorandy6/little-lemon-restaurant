@@ -81,7 +81,7 @@ export default function Contact() {
         />
       </svg>
       <div className="mx-auto -mt-12 max-w-7xl px-6 sm:mt-0 lg:px-8 xl:-mt-8">
-        <h2 className="text-4xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl">
+        <h2 className="text-4xl text-center font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl">
           Get in Touch
         </h2>
         <p className="mt-2 text-lg/8 text-gray-600">

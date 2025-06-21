@@ -1,8 +1,7 @@
 import Hero from "@/components/unauthenticated/Hero";
 import PublicMenu from "@/components/public/PublicMenu";
 import About from "@/components/unauthenticated/About";
-import ReservationForm from "@/components/public/ReservationForm";
-import Review from "@/components/public/Review";
+import Reviews from "@/components/public/Reviews";
 import Contact from "@/components/public/Contact";
 import ScrollToHandler from "@/components/public/ScrollToHandler";
 import { Suspense } from "react";
@@ -24,8 +23,7 @@ const LandingPage = () => {
       <Hero />
       <PublicMenu />
       <About />
-      <ReservationForm />
-      <Review />
+      <Reviews />
       <Contact />
     </main>
   );

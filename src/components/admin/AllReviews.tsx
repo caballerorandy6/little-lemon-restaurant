@@ -1,5 +1,5 @@
 const AllReviews = () => {
-  return <div>AllReviews</div>;
+  return <section id="all-reviews-page">AllReviews</section>;
 };
 
 export default AllReviews;

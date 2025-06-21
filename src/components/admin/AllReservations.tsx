@@ -1,5 +1,5 @@
 const AllReservations = () => {
-  return <div>AllReservations</div>;
+  return <section id="all-reservations-page">AllReservations</section>;
 };
 
 export default AllReservations;

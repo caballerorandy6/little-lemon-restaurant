@@ -7,7 +7,7 @@ const sectionTitles: Record<string, string> = {
   about: "Little Lemon | Menu",
   services: "Little Lemon | Our History",
   testimonials: "Little Lemon | Reservation",
-  contact: "Little Lemon | Review",
+  contact: "Little Lemon | Reviews",
   faq: "Little Lemon | Contact",
 };
 

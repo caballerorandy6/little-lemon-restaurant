@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import CategoryModal from "@/components/public/CategoryModal";
@@ -10,7 +9,6 @@ import useSectionObserver from "@/libs/hooks/useSectionObserver";
 const PublicMenu = () => {
   const {
     categories,
-    fetchCategories,
     selectedCategory,
     setSelectedCategory,
     landingCategoryDialog,
@@ -19,10 +17,6 @@ const PublicMenu = () => {
 
   const limitedCategories = categories.slice(0, 4);
   const ref = useSectionObserver({ sectionName: "Menu" });
-
-  useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
 
   return (
     <section
@@ -82,7 +76,7 @@ const PublicMenu = () => {
       </ul>
 
       {/* Botón para ver menú completo */}
-      <div className="flex justify-center mb-20">
+      <div className="flex justify-center mb-14">
         <Link
           href="/menu"
           className="rounded-md bg-green-800 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-green-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 transition-colors"

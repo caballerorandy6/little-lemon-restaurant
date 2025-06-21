@@ -2,6 +2,25 @@ import { Meal, Ingredient } from "@/libs/types";
 import { useLittleLemonStore } from "@/store/little-lemon-store";
 import { CartItem, CategoryAPI, MealAPI, ReservationAPI } from "@/libs/types";
 
+//Sincronizar el carrito con el backend
+export const syncCartWithBackend = async () => {
+  const { isAuthenticated, cart } = useLittleLemonStore.getState();
+
+  if (!isAuthenticated) {
+    sessionStorage.setItem("cart", JSON.stringify(cart));
+  } else {
+    try {
+      await fetch("/api/cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cart }),
+      });
+    } catch (err) {
+      console.error("Error syncing cart:", err);
+    }
+  }
+};
+
 // ✅ Mover esto dentro de una función
 export const getCart = () => useLittleLemonStore.getState().cart;
 
@@ -81,7 +100,10 @@ export async function getCategories(): Promise<CategoryAPI[]> {
 export async function getMealsByCategory(category: string): Promise<MealAPI[]> {
   try {
     const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/meals-by-category/${category}`
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/meals-by-category/${category}`,
+      {
+        next: { revalidate: 60 }, // Revalidate every 60 seconds
+      }
     );
 
     if (!response.ok) {
@@ -101,24 +123,31 @@ export async function getMealsByCategory(category: string): Promise<MealAPI[]> {
 // getSingleMeal function to fetch a single meal by category and name from the API
 export async function getSingleMeal(
   category: string,
-  name: string
+  name: string,
+  baseUrl?: string
 ): Promise<MealAPI | null> {
   try {
-    const response = await fetch(
-      `/api/meals-by-category/${category}/${encodeURIComponent(name)}`
-    );
+    const resolvedBaseUrl =
+      baseUrl ||
+      (typeof window === "undefined"
+        ? "http://localhost:3000" // SSR fallback
+        : window.location.origin); // Client fallback
+
+    const url = `${resolvedBaseUrl}/api/meals-by-category/${category}/${encodeURIComponent(name)}`;
+
+    const response = await fetch(url, {
+      next: { revalidate: 60 }, //
+    });
 
     if (!response.ok) {
       throw new Error("Failed to fetch meal");
     }
 
     const meal = await response.json();
-    const mealWithPrice: MealAPI = {
+    return {
       ...meal,
-      price: meal.price ?? 10, // Default price if not provided
+      price: meal.price ?? 10,
     };
-
-    return mealWithPrice;
   } catch (error) {
     console.error("Error fetching single meal:", error);
     return null;
@@ -131,6 +160,7 @@ export async function getUserReservations(): Promise<ReservationAPI[] | null> {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/reservations`,
       {
+        next: { revalidate: 60 },
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -155,6 +185,7 @@ export async function deleteReservationById(id: number) {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/reservations?id=${id}`,
       {
+        next: { revalidate: 60 },
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -180,6 +211,7 @@ export async function updateReservationById(data: ReservationAPI) {
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/reservations`,
       {
+        next: { revalidate: 60 },
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

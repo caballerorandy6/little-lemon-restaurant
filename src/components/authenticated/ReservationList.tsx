@@ -23,7 +23,7 @@ export default function ReservationList() {
   }, [user, fetchUserReservations]);
 
   return (
-    <section className="bg-white p-8 rounded-lg shadow-md max-w-4xl mx-auto mt-10 mb-20 border border-gray-200">
+    <section className="bg-white/80 backdrop-blur p-8 rounded-lg shadow-md max-w-4xl mx-auto mt-10 mb-20">
       <div className="sm:flex sm:items-center justify-between">
         <div className="sm:flex-auto">
           <h1 className="text-base font-semibold text-gray-900">

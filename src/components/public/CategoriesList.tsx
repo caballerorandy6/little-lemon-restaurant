@@ -1,9 +1,8 @@
 "use client";
 
-import { useEffect, useTransition } from "react";
+import { useTransition } from "react";
 import Image from "next/image";
 import { useLittleLemonStore } from "@/store/little-lemon-store";
-
 import clsx from "clsx";
 import {
   Dialog,
@@ -14,38 +13,23 @@ import {
 import { XMarkIcon } from "@heroicons/react/16/solid";
 import Link from "next/link";
 import { MealAPI } from "@/libs/types";
-import CategoriesLisSkeleton from "./CategoriesListSkeleton";
+import CategoriesLisSkeleton from "../skeletons/CategoriesListSkeleton";
 
 export default function CategoriesList() {
   const {
     categories,
-    fetchCategories,
     items,
-    fetchMealsByCategory,
     selectedCategory,
     setSelectedCategory,
     openCategoryListDialog,
     setOpenCategoryListDialog,
     isLoading,
+    mealsByCategory,
   } = useLittleLemonStore();
 
+  console.log("Meals by category:", mealsByCategory);
+
   const [isPending, startTransition] = useTransition();
-
-  useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
-
-  useEffect(() => {
-    if (categories.length > 0 && !selectedCategory) {
-      setSelectedCategory(categories[0]);
-    }
-  }, [categories, selectedCategory, setSelectedCategory]);
-
-  useEffect(() => {
-    if (selectedCategory) {
-      fetchMealsByCategory(selectedCategory.strCategory);
-    }
-  }, [selectedCategory, fetchMealsByCategory]);
 
   return (
     <div>
@@ -129,9 +113,9 @@ export default function CategoriesList() {
                     }}
                     className={clsx(
                       selectedCategory?.id === item.id
-                        ? "bg-green-200 text-green-700"
+                        ? "bg-green-100 text-green-700"
                         : "text-gray-500 hover:bg-green-100 hover:text-green-700",
-                      "group flex gap-x-3 rounded-xl p-3 text-base font-semibold transition-colors w-full my-0.5"
+                      "group flex gap-x-3 rounded-xl p-3 text-base transition-colors w-full cursor-pointer"
                     )}
                   >
                     {item.strCategory}

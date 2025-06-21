@@ -5,8 +5,6 @@ import { Fragment } from "react";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import Image from "next/image";
 import { useLittleLemonStore } from "@/store/little-lemon-store";
-import { useEffect } from "react";
-import { useParams } from "next/navigation";
 import Link from "next/link";
 import { CartItem } from "@/libs/types";
 import { MealAPI } from "@/libs/types";
@@ -22,46 +20,29 @@ const classNames: ClassNames = (...classes) => {
 };
 
 export default function SingleMeal() {
-  const {
-    meal,
-    fetchSingleMeal,
-    addToCart,
-    removeFromCart,
-    specificItemQuantity,
-    cart,
-  } = useLittleLemonStore();
-  const params = useParams();
-  const decodedName =
-    typeof params.name === "string" ? decodeURIComponent(params.name) : "";
+  const { singleMeal, addToCart, removeFromCart, specificItemQuantity, cart } =
+    useLittleLemonStore();
 
-  console.log("Cart", cart);
-  console.log("Meal", typeof meal?.createdAt);
+  console.log("SingleMeal component rendered with singleMeal:", singleMeal);
 
   // Remove unwanted keys from the meal object
   const keysToRemove = ["tags", "video"];
   const item = Object.fromEntries(
-    Object.entries(meal || {}).filter(([key]) => !keysToRemove.includes(key))
+    Object.entries(singleMeal || {}).filter(
+      ([key]) => !keysToRemove.includes(key)
+    )
   );
 
   // Create a new object with the remaining keys
   const cartItem: CartItem = {
     item: item as MealAPI,
     quantity: specificItemQuantity,
-    image: meal?.strMealThumb || "",
+    image: singleMeal?.strMealThumb || "",
   };
 
   const quantityItemCart = cart.find(
-    (item: CartItem) => item.item.id === meal?.id
+    (item: CartItem) => item?.item?.id === singleMeal?.id
   );
-
-  useEffect(() => {
-    if (
-      typeof params.category === "string" &&
-      typeof params.name === "string"
-    ) {
-      fetchSingleMeal(params.category, decodedName);
-    }
-  }, [fetchSingleMeal, params.category, decodedName, params.name]);
 
   return (
     <div className="bg-white mt-20">
@@ -70,13 +51,13 @@ export default function SingleMeal() {
         <div className="lg:grid lg:grid-cols-7 lg:grid-rows-1 lg:gap-x-8 lg:gap-y-10 xl:gap-x-16">
           {/* Product image */}
           <div className="lg:col-span-4 lg:row-end-1">
-            {meal && meal.strMealThumb ? (
+            {singleMeal && singleMeal.strMealThumb ? (
               <Image
                 priority
                 width={500}
                 height={500}
-                alt={meal.strMeal}
-                src={meal.strMealThumb}
+                alt={singleMeal.strMeal}
+                src={singleMeal.strMealThumb}
                 className="aspect-4/3 w-full rounded-lg bg-gray-100 object-cover"
               />
             ) : (
@@ -99,19 +80,19 @@ export default function SingleMeal() {
             <div className="flex flex-col-reverse">
               <div className="mt-4">
                 <h1 className="text-2xl font-bold tracking-tight text-gray-900 sm:text-3xl">
-                  {meal?.strMeal}
+                  {singleMeal?.strMeal}
                 </h1>
                 <p className="mt-2 text-sm text-gray-500">
                   Last Update:{" "}
-                  {meal?.updatedAt &&
-                    new Date(meal.updatedAt).toLocaleDateString("en-US", {
+                  {singleMeal?.updatedAt &&
+                    new Date(singleMeal.updatedAt).toLocaleDateString("en-US", {
                       month: "long",
                       day: "numeric",
                       year: "numeric",
                     })}
                 </p>
                 <p className="mt-2 text-sm text-gray-500">
-                  (Tags: {meal?.strTags})
+                  (Tags: {singleMeal?.strTags})
                 </p>
               </div>
 
@@ -159,24 +140,26 @@ export default function SingleMeal() {
 
             <div className="mt-10 border-t border-gray-200 pt-10">
               <h3 className="text-sm font-bold text-gray-900">Price</h3>
-              <p className="mt-4 text-sm">${meal?.price}</p>
+              <p className="mt-4 text-sm">
+                ${(singleMeal?.price ?? 0) * (quantityItemCart?.quantity ?? 0)}
+              </p>
             </div>
 
             <div className="mt-10 border-t border-gray-200 pt-10">
               <h3 className="text-sm font-bold text-gray-900">Watch Video</h3>
               <Link
                 target="_blank"
-                href={meal?.strYoutube ?? "#"}
+                href={singleMeal?.strYoutube ?? "#"}
                 className="mt-4 text-blue-500 hover:text-blue-700 transition-colors text-sm"
               >
-                {meal?.strYoutube ?? "No video available"}
+                {singleMeal?.strYoutube ?? "No video available"}
               </Link>
             </div>
 
             <div className="mt-10 border-t border-gray-200 pt-10">
               <h3 className="text-sm font-bold text-gray-900">Instructions</h3>
               <p className="mt-4 text-sm text-gray-500">
-                {meal?.strInstructions}{" "}
+                {singleMeal?.strInstructions}{" "}
               </p>
             </div>
 
@@ -262,7 +245,7 @@ export default function SingleMeal() {
                 <TabPanel className="-mb-10">
                   <h3 className="sr-only">Customer Reviews</h3>
 
-                  {meal?.reviews.map((review, reviewIdx) => (
+                  {singleMeal?.reviews.map((review, reviewIdx) => (
                     <div
                       key={review.id}
                       className="flex space-x-4 text-sm text-gray-500"

@@ -31,28 +31,28 @@ const NavbarAuth = () => {
   const avatarUrl = userNameSimulation(user?.name || "No Name");
 
   return (
-    <header className="absolute inset-x-0 top-0 z-50">
-      <nav className="mx-auto flex items-center justify-between px-8 py-4 fixed w-full transition-all nav-blur duration-300">
-        <div className="flex lg:flex-1">
-          <Link href="/#home" className="-m-1.5 p-1.5">
-            <Image
-              priority
-              width={1000}
-              height={1000}
-              alt="Little Lemon Logo"
-              src="/logo/logo3.webp"
-              className="h-10 w-auto"
-            />
-          </Link>
-        </div>
+    <header className="fixed inset-x-0 top-0 z-50 bg-white/80 backdrop-blur border-gray-200">
+      <nav className="mx-auto max-w-7xl flex items-center justify-between px-6 py-3">
+        {/* Logo */}
+        <Link href="/#home" className="flex items-center">
+          <Image
+            priority
+            width={1000}
+            height={1000}
+            alt="Little Lemon Logo"
+            src="/logo/logo3.webp"
+            className="h-10 w-auto"
+          />
+        </Link>
 
-        <div className="hidden lg:flex lg:gap-x-12">
+        {/* Desktop Navigation */}
+        <div className="hidden lg:flex gap-x-10">
           {navigation.map((item) => (
             <Link
               key={item.name}
               href={item.href}
               className={clsx(
-                "relative text-sm text-gray-500 font-sans transition-colors duration-300 ease-in-out hover:text-green-600 after:content-[''] after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-green-600 after:transition-all after:duration-300 hover:after:w-full",
+                "relative text-sm text-gray-600 font-medium transition hover:text-green-600 after:absolute after:bottom-0 after:left-0 after:h-[2px] after:w-0 after:bg-green-600 after:transition-all after:duration-300 hover:after:w-full",
                 {
                   "text-green-600 after:w-full font-semibold":
                     activeSection === item.name,
@@ -64,126 +64,130 @@ const NavbarAuth = () => {
           ))}
         </div>
 
-        {/* Avatar (siempre visible en desktop) */}
-        <div className="hidden lg:flex lg:flex-1 lg:justify-end items-center gap-4">
+        {/* Desktop Right: Avatar + Cart */}
+        <div className="hidden lg:flex items-center gap-4">
           <ShoppingCart />
-          <button onClick={() => setAvatarMenuOpen(true)}>
+          <button
+            onClick={() => setAvatarMenuOpen(true)}
+            className="focus:outline-none cursor-pointer"
+          >
             <Image
               priority
               width={1000}
               height={1000}
-              className="size-8 rounded-full cursor-pointer"
               src={avatarUrl}
-              alt="User profile"
+              alt="User Avatar"
+              className="size-8 rounded-full object-cover border border-gray-300 hover:ring-2 hover:ring-green-500 transition"
             />
           </button>
         </div>
 
-        {/* Botón menú móvil (hamburguesa) */}
-        <div className="flex lg:hidden">
+        {/* Mobile Menu Button */}
+        <div className="lg:hidden">
           <button
             onClick={() => setAuthMobileMenuOpen(true)}
-            className="-m-2.5 inline-flex items-center justify-center rounded-md p-2.5 text-gray-700"
+            className="p-2 rounded-md text-gray-700 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-600"
           >
-            <Bars3Icon className="size-6 cursor-pointer" />
+            <Bars3Icon className="w-6 h-6" />
           </button>
         </div>
       </nav>
 
-      {/* Menú Móvil (hamburguesa) */}
+      {/* Mobile Menu */}
       <Dialog
         open={authMobileMenuOpen}
-        onClose={() => setAuthMobileMenuOpen(false)}
+        onClose={setAuthMobileMenuOpen}
         className="lg:hidden"
       >
-        <div className="fixed inset-0 z-50" />
-        <DialogPanel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
-          <div className="flex items-center justify-between">
-            <Link href="/#home" className="-m-1.5 p-1.5">
+        <div
+          className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
+          aria-hidden="true"
+        />
+        <DialogPanel className="fixed inset-y-0 right-0 z-50 w-80 bg-white shadow-xl px-6 py-6 overflow-y-auto">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-6">
+            <Link href="/#home" onClick={() => setAuthMobileMenuOpen(false)}>
               <Image
                 priority
                 width={1000}
                 height={1000}
                 alt="Little Lemon Logo"
                 src="/logo/logo5.webp"
-                className="h-20 w-auto"
+                className="h-14 w-auto"
               />
             </Link>
             <button
               onClick={() => setAuthMobileMenuOpen(false)}
-              className="-m-2.5 rounded-md p-2.5 text-gray-700"
+              className="p-2 text-gray-700 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-600"
             >
-              <XMarkIcon className="size-6 cursor-pointer hover:bg-gray-100 rounded transition-colors" />
+              <XMarkIcon className="w-6 h-6" />
             </button>
           </div>
 
-          <div className="mt-6 flow-root">
-            <div className="-my-6 divide-y divide-gray-500/10">
-              <div className="py-6">
-                {navigation.map((item) => (
-                  <Link
-                    key={item.name}
-                    onClick={() => setAuthMobileMenuOpen(false)}
-                    href={item.href}
-                    className={clsx(
-                      "-mx-3 block rounded-lg px-3 py-2 text-base text-gray-900 hover:bg-gray-50 transition-colors",
-                      {
-                        "bg-gray-50 text-green-800":
-                          activeSection === item.name,
-                      }
-                    )}
-                  >
-                    {item.name}
-                  </Link>
-                ))}
-              </div>
-              <div className="py-6">
-                <ShoppingCart />
-              </div>
-              <div className="py-6">
-                <button
-                  onClick={() => {
-                    setAuthMobileMenuOpen(false);
-                    logout();
-                  }}
-                  className="-mx-3 rounded-lg px-3 py-2.5 text-base text-gray-900 hover:text-red-400 hover:bg-gray-50 transition-colors w-full flex cursor-pointer"
-                >
-                  Logout
-                </button>
-              </div>
-            </div>
+          <div className="space-y-4">
+            {navigation.map((item) => (
+              <Link
+                key={item.name}
+                href={item.href}
+                onClick={() => setAuthMobileMenuOpen(false)}
+                className={clsx(
+                  "block rounded px-3 py-2 text-base text-gray-800 hover:bg-gray-100 hover:text-green-600 transition",
+                  {
+                    "bg-gray-100 text-green-600 font-semibold":
+                      activeSection === item.name,
+                  }
+                )}
+              >
+                {item.name}
+              </Link>
+            ))}
+
+            <ShoppingCart />
+
+            <button
+              onClick={() => {
+                setAuthMobileMenuOpen(false);
+                logout();
+              }}
+              className="w-full mt-4 text-left rounded px-3 py-2 text-base text-red-500 hover:bg-gray-100 hover:text-red-600 transition"
+            >
+              Logout
+            </button>
           </div>
         </DialogPanel>
       </Dialog>
 
-      {/* Menú del Avatar */}
+      {/* Avatar Menu (Dialog style) */}
       <Dialog open={avatarMenuOpen} onClose={() => setAvatarMenuOpen(false)}>
-        <div className="fixed inset-0 z-50 bg-black/20" />
-        <DialogPanel className="fixed inset-y-0 right-0 z-50 w-full overflow-y-auto bg-white px-6 py-6 sm:max-w-sm sm:ring-1 sm:ring-gray-900/10">
-          <div className="flex items-center justify-between">
-            <Link href="/#home" className="-m-1.5 p-1.5">
+        <div
+          className="fixed inset-0 z-40 bg-black/30 backdrop-blur-sm"
+          aria-hidden="true"
+        />
+        <DialogPanel className="fixed inset-y-0 right-0 z-50 w-80 bg-white shadow-xl px-6 py-6">
+          <div className="flex items-center justify-between mb-6">
+            <Link href="/#home" onClick={() => setAvatarMenuOpen(false)}>
               <Image
                 priority
                 width={1000}
                 height={1000}
                 alt="Little Lemon Logo"
                 src="/logo/logo5.webp"
-                className="h-20 w-auto"
+                className="h-14 w-auto"
               />
             </Link>
             <button
               onClick={() => setAvatarMenuOpen(false)}
-              className="-m-2.5 rounded-md p-2.5 text-gray-700"
+              className="p-2 text-gray-700 rounded-md hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-600"
             >
-              <XMarkIcon className="size-6 cursor-pointer hover:bg-gray-100 rounded transition-colors" />
+              <XMarkIcon className="w-6 h-6" />
             </button>
           </div>
 
-          <div className="mt-6 space-y-6">
+          <div className="space-y-4">
             <Link
               href="/user/profile"
               onClick={() => setAvatarMenuOpen(false)}
-              className="block rounded-lg px-3 py-2 text-base hover:bg-gray-50 transition-colors hover:text-green-600 "
+              className="block rounded px-3 py-2 text-base hover:bg-gray-100 hover:text-green-600 transition"
             >
               View Profile
             </Link>
@@ -192,7 +196,7 @@ const NavbarAuth = () => {
                 setAvatarMenuOpen(false);
                 logout();
               }}
-              className="block w-full text-left rounded-lg px-3 py-2 text-base hover:bg-gray-50  transition-colors cursor-pointer hover:text-red-400"
+              className="w-full text-left rounded px-3 py-2 text-base text-red-500 hover:bg-gray-100 hover:text-red-600 transition"
             >
               Logout
             </button>

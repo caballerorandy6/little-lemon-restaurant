@@ -1,5 +1,7 @@
 import CategoriesList from "@/components/public/CategoriesList";
 import { getCategories } from "@/libs/utils";
+import { Suspense } from "react";
+import CategoriesSidebarSkeleton from "@/components/skeletons/CategoriesSidebarSkeleton";
 
 export async function generateStaticParams() {
   const categories = await getCategories();
@@ -8,10 +10,12 @@ export async function generateStaticParams() {
   }));
 }
 
-const Menu = async () => {
+const Menu = () => {
   return (
     <main id="menu" className="pt-40">
-      <CategoriesList />
+      <Suspense fallback={<CategoriesSidebarSkeleton />}>
+        <CategoriesList />
+      </Suspense>
     </main>
   );
 };

@@ -1,17 +1,15 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 import { User } from "@/libs/types";
 import { CartItem } from "@/libs/types";
 import { CategoryAPI } from "@/libs/types";
 import { MealAPI, ReservationAPI } from "@/libs/types";
 import {
-  getCategories,
-  getMealsByCategory,
-  getSingleMeal,
   getUserReservations,
   deleteReservationById as deleteReservationByIdAPI,
   updateReservationById as updateReservationByIdAPI,
 } from "@/libs/utils";
+import { syncCartWithBackend } from "@/libs/utils";
 
 interface LittleLemonStore {
   editingId: number | null;
@@ -39,7 +37,6 @@ interface LittleLemonStore {
   setSpecificItemQuantity: (quantity: number) => void;
   selectedCategory: CategoryAPI | null;
   setSelectedCategory: (category: CategoryAPI | null) => void;
-  meal: MealAPI | null;
   unauthMobileMenuOpen: boolean;
   setUnauthMobileMenuOpen: (open: boolean) => void;
   authMobileMenuOpen: boolean;
@@ -55,275 +52,214 @@ interface LittleLemonStore {
   items: MealAPI[];
   setItems: (items: MealAPI[]) => void;
   cart: CartItem[];
+  setCart: (cart: CartItem[]) => void;
   addToCart: (item: CartItem) => void;
   removeFromCart: (itemId: number) => void;
   emptyCart: () => void;
+  lastupdated: number;
   isAuthenticated: boolean;
   setIsAuthenticated: (isAuthenticated: boolean) => void;
-  fetchMealsByCategory: (categoryName: string) => Promise<void>;
   categories: CategoryAPI[];
   setCategories: (categories: CategoryAPI[]) => void;
-  fetchCategories: () => Promise<void>;
-  fetchSingleMeal: (category: string, name: string) => Promise<void>;
+  singleMeal: MealAPI | null;
+  setSingleMeal: (meal: MealAPI | null) => void;
+  mealsByCategory: MealAPI[];
+  setMealsByCategory: (meals: MealAPI[]) => void;
 }
 
 export const useLittleLemonStore = create<LittleLemonStore>()(
   persist(
     (set) => ({
+      singleMeal: null,
+      setSingleMeal: (meal) => set({ singleMeal: meal }),
+      mealsByCategory: [],
+      setMealsByCategory: (meals) => set({ mealsByCategory: meals }),
       editingId: null,
-      setEditingId: (id: number | null) => set({ editingId: id }),
+      setEditingId: (id) => set({ editingId: id }),
       editReservationValues: {
         date: "",
         time: "",
         guests: 0,
       } as ReservationAPI | null,
-      setEditReservationValues: (values: ReservationAPI | null) =>
+      setEditReservationValues: (values) =>
         set({ editReservationValues: values }),
       avatarMenuOpen: false,
-      setAvatarMenuOpen: (open: boolean) => set({ avatarMenuOpen: open }),
+      setAvatarMenuOpen: (open) => set({ avatarMenuOpen: open }),
       landingCategoryDialog: false,
-      setLandingCategoryDialog: (open: boolean) =>
-        set({ landingCategoryDialog: open }),
+      setLandingCategoryDialog: (open) => set({ landingCategoryDialog: open }),
       categoryModalDialog: false,
-      setCategoryModalDialog: (open: boolean) =>
-        set({ categoryModalDialog: open }),
+      setCategoryModalDialog: (open) => set({ categoryModalDialog: open }),
       openCategoryListDialog: false,
-      setOpenCategoryListDialog: (open: boolean) =>
+      setOpenCategoryListDialog: (open) =>
         set({ openCategoryListDialog: open }),
       openAdminDialog: false,
-      setOpenAdminDialog: (open: boolean) => set({ openAdminDialog: open }),
-      getCartTotal: (cart: CartItem[]) => {
-        return cart.reduce((total, item) => {
-          return total + item.quantity;
-        }, 0);
-      },
+      setOpenAdminDialog: (open) => set({ openAdminDialog: open }),
+      getCartTotal: (cart) =>
+        cart.reduce((total, item) => total + item.quantity, 0),
       specificItemQuantity: 0,
-      setSpecificItemQuantity: (quantity: number) =>
+      setSpecificItemQuantity: (quantity) =>
         set({ specificItemQuantity: quantity }),
       selectedCategory: null,
-      setSelectedCategory: (category: CategoryAPI | null) =>
-        set({ selectedCategory: category }),
+      setSelectedCategory: (category) => set({ selectedCategory: category }),
       unauthMobileMenuOpen: false,
-      setUnauthMobileMenuOpen: (open: boolean) =>
-        set({ unauthMobileMenuOpen: open }),
+      setUnauthMobileMenuOpen: (open) => set({ unauthMobileMenuOpen: open }),
       authMobileMenuOpen: false,
-      setAuthMobileMenuOpen: (open: boolean) =>
-        set({ authMobileMenuOpen: open }),
+      setAuthMobileMenuOpen: (open) => set({ authMobileMenuOpen: open }),
       isLoading: false,
-      setIsLoading: (loading: boolean) => set({ isLoading: loading }),
+      setIsLoading: (loading) => set({ isLoading: loading }),
       isLoadingAuth: true,
-      setIsLoadingAuth: (loading: boolean) => set({ isLoadingAuth: loading }),
+      setIsLoadingAuth: (loading) => set({ isLoadingAuth: loading }),
       activeSection: "Home",
-      setActiveSection: (section: string) => set({ activeSection: section }),
+      setActiveSection: (section) => set({ activeSection: section }),
       user: null,
-      setUser: (user: User | null) => set({ user }),
+      setUser: (user) => set({ user }),
       items: [],
-      setItems: (items: MealAPI[]) => set({ items }),
+      setItems: (items) => set({ items }),
       cart: [],
       addToCart: (item: CartItem) => {
-        set((cartState) => {
-          const existingItem = cartState.cart.find(
-            (ci) => ci.item.id === item.item.id
+        const state = useLittleLemonStore.getState();
+        const quantityToAdd = item.quantity || 1;
+        const existing = state.cart.find((ci) => ci.item.id === item.item.id);
+
+        let updatedCart;
+
+        if (existing) {
+          updatedCart = state.cart.map((ci) =>
+            ci.item.id === item.item.id
+              ? { ...ci, quantity: ci.quantity + quantityToAdd }
+              : ci
           );
+        } else {
+          updatedCart = [...state.cart, { ...item, quantity: quantityToAdd }];
+        }
 
-          const quantityToAdd = item.quantity || 1; // 👈
+        // Update the cart in the store
+        set({ cart: updatedCart });
 
-          if (existingItem) {
-            return {
-              cart: cartState.cart.map((ci) =>
-                ci.item.id === item.item.id
-                  ? { ...ci, quantity: ci.quantity + quantityToAdd }
-                  : ci
-              ),
-            };
+        // Sync cart with backend
+        syncCartWithBackend();
+      },
+      removeFromCart: (itemId) => {
+        set((state) => {
+          const item = state.cart.find((ci) => ci.item.id === itemId);
+          if (!item) return state;
+
+          let updatedCart;
+
+          if (item.quantity > 1) {
+            updatedCart = state.cart.map((ci) =>
+              ci.item.id === itemId ? { ...ci, quantity: ci.quantity - 1 } : ci
+            );
           } else {
-            return {
-              cart: [...cartState.cart, { ...item, quantity: quantityToAdd }],
-            };
+            updatedCart = state.cart.filter((ci) => ci.item.id !== itemId);
           }
+
+          // Actualiza el estado
+          set({ cart: updatedCart });
+
+          // Sincroniza con backend o sessionStorage
+          syncCartWithBackend();
+
+          return { cart: updatedCart };
         });
       },
-
-      removeFromCart: (itemId: number) => {
-        set((cartState) => {
-          const existingItem = cartState.cart.find(
-            (ci) => ci.item.id === itemId
-          );
-
-          if (!existingItem) return cartState; // No existe el item, no hacer nada
-
-          if (existingItem.quantity > 1) {
-            // Si la cantidad es mayor a 1, restamos 1
-            return {
-              cart: cartState.cart.map((ci) =>
-                ci.item.id === itemId
-                  ? { ...ci, quantity: ci.quantity - 1 }
-                  : ci
-              ),
-            };
-          } else {
-            // Si la cantidad es 1, eliminamos el item del carrito
-            return {
-              cart: cartState.cart.filter((ci) => ci.item.id !== itemId),
-            };
-          }
-        });
-      },
-
       emptyCart: () => {
-        set(() => ({
-          cart: [],
-        }));
+        const { isAuthenticated } = useLittleLemonStore.getState();
+
+        // Limpia el estado global
+        set({ cart: [] });
+
+        // Elimina también del sessionStorage si no está autenticado
+        if (!isAuthenticated) {
+          sessionStorage.removeItem("little-lemon-store");
+          sessionStorage.removeItem("cart");
+        }
+
+        // Sincroniza con el backend si está autenticado
+        syncCartWithBackend();
       },
+      lastupdated: Date.now(),
       isAuthenticated: false,
-      setIsAuthenticated: (isAuthenticated: boolean) =>
-        set({ isAuthenticated }),
+      setIsAuthenticated: (auth) => {
+        set({ isAuthenticated: auth });
+        if (!auth) {
+          sessionStorage.removeItem("little-lemon-store");
+        }
+      },
       categories: [],
-      setCategories: (categories: CategoryAPI[]) => set({ categories }),
-
-      fetchCategories: async () => {
-        set({ isLoading: true });
-        try {
-          const data = await getCategories();
-          set({
-            categories: data.map((cat: CategoryAPI) => ({
-              id: cat.id,
-              strCategory: cat.strCategory,
-              description: cat.description ?? "",
-              thumb: cat.thumb ?? "",
-            })),
-          });
-        } catch (error) {
-          console.error("Error fetching categories:", error);
-        } finally {
-          set({ isLoading: false });
-        }
-      },
-
-      // Fetch items by category from the API
-      fetchMealsByCategory: async (category: string) => {
-        set({ isLoading: true, items: [] });
-
-        try {
-          const response = await getMealsByCategory(category);
-
-          if (!response || response.length === 0) {
-            throw new Error("No meals found for this category");
-          }
-
-          const data = response.map((meal: MealAPI) => ({
-            ...meal,
-            price: meal.price ?? 10, // Default price if not provided
-          }));
-          set({ items: data });
-        } catch (error) {
-          console.error("Error fetching meals by category:", error);
-          set({ items: [] });
-        } finally {
-          set({ isLoading: false });
-        }
-      },
-
-      // Fetch a single meal by category and name from the API
-      fetchSingleMeal: async (category: string, name: string) => {
-        set({ isLoading: true, meal: null });
-        try {
-          const meal = await getSingleMeal(category, name);
-          if (!meal) {
-            throw new Error("Meal not found");
-          }
-          set({ meal });
-        } catch (error) {
-          console.error("Error fetching single meal:", error);
-          set({ meal: null });
-        } finally {
-          set({ isLoading: false });
-        }
-      },
-
-      meal: null,
+      setCategories: (categories) => set({ categories }),
 
       fetchUserReservations: async () => {
         set({ isLoading: true, userReservations: [] });
         try {
-          let reservations = await getUserReservations();
-
-          if (!reservations || reservations.length === 0) {
-            reservations = [];
-          }
-          set({ userReservations: reservations });
-        } catch (error) {
-          console.error("Error fetching user reservations:", error);
+          const res = await getUserReservations();
+          set({ userReservations: res || [] });
+        } catch (e) {
+          console.error("Error fetching user reservations:", e);
           set({ userReservations: [] });
         } finally {
           set({ isLoading: false });
         }
       },
-
-      deleteReservationById: async (reservationId: number) => {
+      deleteReservationById: async (id) => {
         set({ isLoading: true });
         try {
-          const respnse = await deleteReservationByIdAPI(reservationId);
-          if (!respnse) {
-            throw new Error("Failed to delete reservation");
-          }
-
-          // Update userReservations after deletion
+          const res = await deleteReservationByIdAPI(id);
+          if (!res) throw new Error("Failed to delete reservation");
           set((state) => ({
-            userReservations: state.userReservations.filter(
-              (reservation) => reservation.id !== reservationId
-            ),
+            userReservations: state.userReservations.filter((r) => r.id !== id),
           }));
-        } catch (error) {
-          console.error("Error deleting reservation:", error);
-          throw error; //
+        } catch (e) {
+          console.error("Error deleting reservation:", e);
         } finally {
           set({ isLoading: false });
         }
       },
-
-      updateReservation: async (data: ReservationAPI) => {
+      updateReservation: async (data) => {
         set({ isLoading: true });
         try {
-          const response = await updateReservationByIdAPI(data);
-
-          if (!response) {
-            throw new Error("Failed to update reservation");
-          }
-
+          const updated = await updateReservationByIdAPI(data);
+          if (!updated) throw new Error("Failed to update reservation");
           set((state) => ({
-            userReservations: state.userReservations.map((reservation) =>
-              reservation.id === response.id ? response : reservation
+            userReservations: state.userReservations.map((r) =>
+              r.id === updated.id ? updated : r
             ),
             editingId: null,
             editReservationValues: null,
           }));
-        } catch (error) {
-          console.error("Error updating reservation:", error);
-          throw error;
+        } catch (e) {
+          console.error("Error updating reservation:", e);
         } finally {
           set({ isLoading: false });
         }
       },
-
       userReservations: [],
-
-      updateQuantity: (itemId: number, newQuantity: number) => {
+      updateQuantity: (itemId, newQuantity) => {
         set((state) => {
           const updatedCart = state.cart.map((ci) =>
             ci.item.id === itemId ? { ...ci, quantity: newQuantity } : ci
           );
+          syncCartWithBackend();
           return { cart: updatedCart };
         });
       },
-      removeItems: (itemId: number) => {
-        set((state) => ({
-          cart: state.cart.filter((item) => item.item.id !== itemId),
-        }));
+      removeItems: (itemId) => {
+        set((state) => {
+          const updatedCart = state.cart.filter((ci) => ci.item.id !== itemId);
+          syncCartWithBackend();
+          return { cart: updatedCart };
+        });
+      },
+
+      setCart: (cart: CartItem[]) => {
+        set({ cart });
+        //syncCartWithBackend();
       },
     }),
     {
       name: "little-lemon-store",
+      storage: createJSONStorage(() => sessionStorage),
+      version: 1,
     }
   )
 );

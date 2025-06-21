@@ -1,17 +1,12 @@
 "use client";
 
-import { useEffect } from "react";
 import CategoryModal from "@/components/public/CategoryModal";
 import { useLittleLemonStore } from "@/store/little-lemon-store";
 import clsx from "clsx";
 
 export default function SideBarCategories() {
-  const { categories, fetchCategories, selectedCategory, setSelectedCategory } =
+  const { categories, selectedCategory, setSelectedCategory } =
     useLittleLemonStore();
-
-  useEffect(() => {
-    fetchCategories();
-  }, [fetchCategories]);
 
   return (
     <div className="flex grow flex-col gap-y-5 overflow-y-auto border-r border-gray-200 bg-white px-6">

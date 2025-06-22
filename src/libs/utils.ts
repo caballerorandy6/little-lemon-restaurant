@@ -130,7 +130,7 @@ export async function getSingleMeal(
     const resolvedBaseUrl =
       baseUrl ||
       (typeof window === "undefined"
-        ? "http://localhost:3000" // SSR fallback
+        ? process.env.NEXT_PUBLIC_BASE_URL // SSR fallback
         : window.location.origin); // Client fallback
 
     const url = `${resolvedBaseUrl}/api/meals-by-category/${category}/${encodeURIComponent(name)}`;

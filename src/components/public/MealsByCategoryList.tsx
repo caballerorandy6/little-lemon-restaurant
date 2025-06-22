@@ -1,21 +1,32 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-import { MealAPI } from "@/libs/types";
+import { useLittleLemonStore } from "@/store/little-lemon-store";
+import CategoriesLisSkeleton from "../skeletons/CategoriesListSkeleton";
 
-type MealsByCategoryListProps = {
-  category: string;
-  meals: MealAPI[];
-};
+const MealsByCategoryList = () => {
+  const { selectedCategory, mealsByCategory, isLoading } =
+    useLittleLemonStore();
 
-const MealsByCategoryList = ({ category, meals }: MealsByCategoryListProps) => {
+  console.log("Meals by Category", mealsByCategory);
+
+  const meals = mealsByCategory.filter(
+    (item) => item.category?.strCategory === selectedCategory?.strCategory
+  );
+
+  if (!selectedCategory || isLoading || meals.length === 0) {
+    return <CategoriesLisSkeleton />;
+  }
+
   return (
-    <div className="bg-white mt-20">
-      <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 sm:py-24 lg:max-w-7xl lg:px-8">
+    <div className="bg-white">
+      <div className="mx-auto max-w-2xl px-4  sm:px-6 py-16 sm:py-0 lg:max-w-7xl lg:px-8">
         <h2 className="text-4xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl">
-          {category} Menu
+          {selectedCategory?.strCategory} Menu
         </h2>
 
-        <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4 xl:gap-x-8">
+        <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
           {meals.map((meal) => (
             <div
               key={meal.id}

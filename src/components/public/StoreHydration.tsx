@@ -34,7 +34,6 @@ export default function StoreHydration({
     setCategories(categories);
     setMealsByCategory(allMealsByCategory);
     setSingleMeal(singleMeal);
-    console.log(singleMeal, "Single meal set in store");
   }, [
     categories,
     setCategories,

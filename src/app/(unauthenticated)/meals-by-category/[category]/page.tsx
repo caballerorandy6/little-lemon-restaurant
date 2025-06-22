@@ -22,7 +22,7 @@ export async function generateMetadata(props: { params: Params }) {
   };
 }
 
-export default function Page({ params }: { params: Params }) {
+export default function MealsByCategoryPage({ params }: { params: Params }) {
   const { category } = use(params);
 
   if (!category) {
@@ -35,5 +35,5 @@ export default function Page({ params }: { params: Params }) {
     notFound();
   }
 
-  return <MealsByCategoryList category={category} meals={meals} />;
+  return <MealsByCategoryList />;
 }

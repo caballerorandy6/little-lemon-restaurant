@@ -1,9 +1,10 @@
+import { use } from "react";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import SingleMeal from "@/components/public/SingleMeal";
-import { getSingleMeal, getCategories, getMealsByCategory } from "@/libs/utils";
 import StoreHydration from "@/components/public/StoreHydration";
-import { use } from "react";
+import SingleMealSkeleton from "@/components/skeletons/SingleMealSkeleton";
+import { getSingleMeal, getCategories, getMealsByCategory } from "@/libs/utils";
 
 // Tipado como Next.js 15 lo exige (parametros como Promise)
 type Params = Promise<{ category: string; name: string }>;
@@ -37,7 +38,7 @@ export default function MealPage({ params }: { params: Params }) {
   // No necesitas pasar el meal directamente como prop,
   // ya lo usas dentro de Zustand con StoreHydration
   return (
-    <Suspense fallback={<div className="mt-20 text-center">Loading...</div>}>
+    <Suspense fallback={<SingleMealSkeleton />}>
       <StoreHydration
         singleMealPromise={Promise.resolve(meal)}
         categoriesPromise={getCategories()}

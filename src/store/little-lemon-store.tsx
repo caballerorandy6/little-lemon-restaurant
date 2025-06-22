@@ -253,6 +253,7 @@ export const useLittleLemonStore = create<LittleLemonStore>()(
 
       setCart: (cart: CartItem[]) => {
         set({ cart });
+
         //syncCartWithBackend();
       },
     }),

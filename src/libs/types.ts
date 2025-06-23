@@ -136,3 +136,7 @@ export type Ingredient = {
   ingredient: string;
   measure: string;
 };
+
+export type TitleProps = {
+  children: React.ReactNode;
+};

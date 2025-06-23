@@ -36,7 +36,6 @@ export async function GET() {
 
     for (const category of categories) {
       const categoryName = category.strCategory;
-      console.log(`Fetching meals for category: ${categoryName}`);
 
       const res = await fetch(
         `https://www.themealdb.com/api/json/v1/1/filter.php?c=${encodeURIComponent(
@@ -123,8 +122,6 @@ export async function GET() {
         );
 
       await Promise.all(upserts);
-
-      console.log(`✅ Synced meals for category: ${categoryName}`);
 
       // Espera 2 segundos antes de procesar la siguiente categoría para evitar saturar
       await delay(2000);

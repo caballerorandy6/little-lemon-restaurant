@@ -9,6 +9,7 @@ import { Bars3Icon, XMarkIcon } from "@heroicons/react/16/solid";
 import { logout } from "@/libs/auth/logout";
 import { userNameSimulation } from "@/libs/utils";
 import ShoppingCart from "@/components/public/ShoppingCart";
+import CurrentUserClient from "@/components/public/CurrentUserClient";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard" },
@@ -184,10 +185,11 @@ const NavbarAuth = () => {
           </div>
 
           <div className="space-y-4">
+            <CurrentUserClient />
             <Link
               href="/user/profile"
               onClick={() => setAvatarMenuOpen(false)}
-              className="block rounded px-3 py-2 text-base hover:bg-gray-100 hover:text-green-600 transition"
+              className="block rounded px-3 py-2 text-base hover:bg-gray-100 hover:text-green-600 transition cursor-pointer"
             >
               View Profile
             </Link>
@@ -196,7 +198,7 @@ const NavbarAuth = () => {
                 setAvatarMenuOpen(false);
                 logout();
               }}
-              className="w-full text-left rounded px-3 py-2 text-base text-red-500 hover:bg-gray-100 hover:text-red-600 transition"
+              className="w-full text-left rounded px-3 py-2 text-base text-red-500 hover:bg-gray-100 hover:text-red-600 transition cursor-pointer"
             >
               Logout
             </button>

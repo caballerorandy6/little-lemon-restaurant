@@ -18,6 +18,8 @@ export type User = {
   updatedAt: string; // o Date
 };
 
+export type SafeUser = Omit<User, "password">;
+
 //Type for TheMealDB API
 export type Category = {
   idCategory: string;
@@ -116,7 +118,7 @@ export type Review = {
   rating: number;
   comment: string;
   createdAt: string; // o Date
-  user?: User;
+  user?: SafeUser;
   meal?: MealAPI;
 };
 

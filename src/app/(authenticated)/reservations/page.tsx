@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { Metadata } from "next";
-import ReservationForm from "@/components/public/ReservationForm";
+import ReservationForm from "@/components/authenticated/ReservationForm";
 import ReservationList from "@/components/authenticated/ReservationList";
 
 export const metadata: Metadata = {

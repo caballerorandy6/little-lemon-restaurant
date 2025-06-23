@@ -4,12 +4,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useLittleLemonStore } from "@/store/little-lemon-store";
 import CategoriesLisSkeleton from "../skeletons/CategoriesListSkeleton";
+import Title from "@/components/public/Title";
 
 const MealsByCategoryList = () => {
   const { selectedCategory, mealsByCategory, isLoading } =
     useLittleLemonStore();
-
-  console.log("Meals by Category", mealsByCategory);
 
   const meals = mealsByCategory.filter(
     (item) => item.category?.strCategory === selectedCategory?.strCategory
@@ -20,11 +19,9 @@ const MealsByCategoryList = () => {
   }
 
   return (
-    <div className="bg-white">
+    <section id="meals-by-category" className="bg-white">
       <div className="mx-auto max-w-2xl px-4  sm:px-6 py-16 sm:py-0 lg:max-w-7xl lg:px-8">
-        <h2 className="text-4xl font-semibold tracking-tight text-pretty text-gray-900 sm:text-5xl">
-          {selectedCategory?.strCategory} Menu
-        </h2>
+        <Title>{selectedCategory?.strCategory} Menu</Title>
 
         <div className="mt-6 grid grid-cols-1 gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3 xl:gap-x-8">
           {meals.map((meal) => (
@@ -59,7 +56,7 @@ const MealsByCategoryList = () => {
           ))}
         </div>
       </div>
-    </div>
+    </section>
   );
 };
 

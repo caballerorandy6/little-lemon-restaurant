@@ -12,11 +12,11 @@ export async function generateStaticParams() {
 
 const Menu = () => {
   return (
-    <main id="menu" className="pt-40">
+    <aside id="authenticated-categories-menu">
       <Suspense fallback={<CategoriesSidebarSkeleton />}>
         <CategoriesList />
       </Suspense>
-    </main>
+    </aside>
   );
 };
 

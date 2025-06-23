@@ -7,7 +7,6 @@ import { useLittleLemonStore } from "@/store/little-lemon-store";
 import ClearCartManager from "@/components/unauthenticated/ClearCartManager";
 
 export default function Navbar() {
-  console.log("Navbar mounted");
   const { isAuthenticated, user } = useLittleLemonStore();
 
   if (isAuthenticated && user?.role === "ADMIN") {

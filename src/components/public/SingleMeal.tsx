@@ -23,8 +23,6 @@ export default function SingleMeal() {
   const { singleMeal, addToCart, removeFromCart, specificItemQuantity, cart } =
     useLittleLemonStore();
 
-  console.log("SingleMeal component rendered with singleMeal:", singleMeal);
-
   // Remove unwanted keys from the meal object
   const keysToRemove = ["tags", "video"];
   const item = Object.fromEntries(

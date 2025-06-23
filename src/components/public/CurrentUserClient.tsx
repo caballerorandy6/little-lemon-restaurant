@@ -13,15 +13,20 @@ const CurrentUserClient = () => {
   useEffect(() => {
     if (!user) {
       router.push("/login");
+    } else {
+      router.push("/dashboard");
     }
-  }, [router, user]);
+  }, [user, router]);
 
   return (
     <Suspense fallback={<WelcomeUser />}>
-      <h1 className="text-xl font-semibold text-green-800 mb-10">{`Welcome, ${user?.name
-        .split(" ")
-        .slice(0, 1)
-        .join("")}`}</h1>
+      <h2 className="text-2xl font-semibold tracking-tight text-pretty text-gray-900">
+        {user ? (
+          `Welcome, ${user.name}`
+        ) : (
+          <span className="inline-block h-6 w-52 animate-pulse rounded bg-gray-200" />
+        )}
+      </h2>
     </Suspense>
   );
 };

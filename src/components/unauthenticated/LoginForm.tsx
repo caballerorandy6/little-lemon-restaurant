@@ -9,10 +9,12 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useLittleLemonStore } from "@/store/little-lemon-store";
 import { ErrorMessage } from "@hookform/error-message";
+import Spinner from "@/components/public/Spinner";
 
 export default function LoginForm() {
   const router = useRouter();
-  const { setIsAuthenticated, setUser } = useLittleLemonStore();
+  const { setIsAuthenticated, setUser, isLoadingAuth, setIsLoadingAuth } =
+    useLittleLemonStore();
 
   const {
     register,
@@ -25,6 +27,8 @@ export default function LoginForm() {
   });
 
   const onSubmit = async (data: LoginFormData) => {
+    setIsLoadingAuth(true);
+
     try {
       const response = await fetch("/api/login", {
         method: "POST",
@@ -52,6 +56,8 @@ export default function LoginForm() {
       toast.success("Login successful");
       reset();
 
+      router.refresh();
+
       if (result.user.role === "ADMIN") {
         router.push("/admin-dashboard");
       } else {
@@ -60,6 +66,8 @@ export default function LoginForm() {
     } catch (error) {
       console.error("Error logging in:", error);
       toast.error("An error occurred while logging in");
+    } finally {
+      setIsLoadingAuth(false);
     }
   };
 
@@ -82,7 +90,10 @@ export default function LoginForm() {
           </Link>
 
           <div className="mt-10">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="space-y-6 border border-gray-300 bg-white p-6 rounded-md shadow-sm"
+            >
               <div>
                 <label
                   htmlFor="email"
@@ -96,7 +107,7 @@ export default function LoginForm() {
                     id="email"
                     type="email"
                     autoComplete="email"
-                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm"
+                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-green-600 sm:text-sm"
                   />
                   <ErrorMessage
                     errors={errors}
@@ -121,7 +132,7 @@ export default function LoginForm() {
                     id="password"
                     type="password"
                     autoComplete="current-password"
-                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm"
+                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-green-600 sm:text-sm"
                   />
                   <ErrorMessage
                     errors={errors}
@@ -136,14 +147,14 @@ export default function LoginForm() {
               <div className="flex items-center justify-between">
                 <Link
                   href="/signup"
-                  className="text-sm font-semibold text-indigo-600 hover:text-indigo-500"
+                  className="text-sm font-semibold text-yellow-500 hover:text-yellow-600 transition-colors"
                 >
                   Create new account!
                 </Link>
 
                 <Link
                   href="/forgot-password"
-                  className="text-sm font-semibold text-indigo-600 hover:text-indigo-500"
+                  className="text-sm font-semibold text-green-600 hover:text-green-700 transition-colors"
                 >
                   Forgot password?
                 </Link>
@@ -155,7 +166,7 @@ export default function LoginForm() {
                   type="submit"
                   className="flex w-full justify-center rounded-md bg-green-800 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-green-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed disabled:pointer-events-none"
                 >
-                  Sign in
+                  {isLoadingAuth ? <Spinner /> : "Sign in"}
                 </button>
               </div>
             </form>

@@ -5,6 +5,8 @@ import SingleMeal from "@/components/public/SingleMeal";
 import StoreHydration from "@/components/public/StoreHydration";
 import SingleMealSkeleton from "@/components/skeletons/SingleMealSkeleton";
 import { getSingleMeal, getCategories, getMealsByCategory } from "@/libs/utils";
+import { getCurrentUser } from "@/libs/auth/getCurrentUser";
+import { getCartServerSide } from "@/libs/server";
 
 // Tipado como Next.js 15 lo exige (parametros como Promise)
 type Params = Promise<{ category: string; name: string }>;
@@ -43,6 +45,8 @@ export default function MealPage({ params }: { params: Params }) {
         singleMealPromise={Promise.resolve(meal)}
         categoriesPromise={getCategories()}
         mealsByCategoryPromise={getMealsByCategory(category)}
+        currentUser={use(getCurrentUser())}
+        cartFromDBPromise={getCartServerSide()}
       />
       <SingleMeal />
     </Suspense>

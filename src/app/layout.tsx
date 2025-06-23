@@ -5,6 +5,8 @@ import { Toaster } from "sonner";
 import Navbar from "@/components/public/Navbar";
 import StoreHydration from "@/components/public/StoreHydration";
 import { getCategories, getMealsByCategory, getSingleMeal } from "@/libs/utils";
+import { getCurrentUser } from "@/libs/auth/getCurrentUser";
+import { getCartServerSide } from "@/libs/server";
 
 const robotoSlab = Roboto_Slab({
   subsets: ["latin"],
@@ -23,11 +25,12 @@ export const metadata: Metadata = {
   description: "Little Lemon Restaurant, a delightful dining experience",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  //
   const categoriesPromise = getCategories();
   const mealsByCategoryPromise = categoriesPromise.then((categories) =>
     Promise.all(
@@ -40,6 +43,8 @@ export default function RootLayout({
   ]).then(([categories, meals]) =>
     getSingleMeal(categories[0]?.strCategory || "", meals[0]?.strMeal || "")
   );
+  const currentUser = await getCurrentUser();
+  const cartFromDBPromise = getCartServerSide();
 
   return (
     <html lang="en" className="!scroll-smooth" suppressHydrationWarning>
@@ -51,6 +56,8 @@ export default function RootLayout({
           categoriesPromise={categoriesPromise}
           mealsByCategoryPromise={mealsByCategoryPromise}
           singleMealPromise={singleMealPromise}
+          currentUser={currentUser}
+          cartFromDBPromise={cartFromDBPromise}
         />
         {children}
         <Toaster position="bottom-right" richColors closeButton={true} />

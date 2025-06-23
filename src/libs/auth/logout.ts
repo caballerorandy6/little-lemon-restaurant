@@ -4,7 +4,7 @@ import { syncCartWithBackend } from "@/libs/utils";
 
 export async function logout() {
   const token = localStorage.getItem("token");
-  const { setIsAuthenticated, setUser, emptyCart } =
+  const { setIsAuthenticated, setUser, setCart } =
     useLittleLemonStore.getState();
 
   if (!token) {
@@ -31,7 +31,7 @@ export async function logout() {
     localStorage.removeItem("token");
     setIsAuthenticated(false);
     setUser(null);
-    emptyCart();
+    setCart([]);
 
     toast.success(`Logout successful ${response.statusText}`);
     window.location.href = "/";

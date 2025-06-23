@@ -74,7 +74,10 @@ const RegisterForm = () => {
           </Link>
 
           <div className="mt-10">
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+              className="space-y-6 p-6 rounded-md shadow-sm bg-white border-gray-300 border"
+            >
               {/* Full Name */}
               <div>
                 <div className="mt-2">

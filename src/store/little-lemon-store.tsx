@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
-import { User } from "@/libs/types";
+import { SafeUser } from "@/libs/types";
 import { CartItem } from "@/libs/types";
 import { CategoryAPI } from "@/libs/types";
 import { MealAPI, ReservationAPI } from "@/libs/types";
@@ -47,8 +47,8 @@ interface LittleLemonStore {
   setIsLoadingAuth: (loading: boolean) => void;
   activeSection: string;
   setActiveSection: (section: string) => void;
-  user: User | null;
-  setUser: (user: User | null) => void;
+  user: SafeUser | null;
+  setUser: (user: SafeUser | null) => void;
   items: MealAPI[];
   setItems: (items: MealAPI[]) => void;
   cart: CartItem[];

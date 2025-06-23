@@ -2,27 +2,12 @@ import { Meal, Ingredient } from "@/libs/types";
 import { useLittleLemonStore } from "@/store/little-lemon-store";
 import { CartItem, CategoryAPI, MealAPI, ReservationAPI } from "@/libs/types";
 
-//Sincronizar el carrito con el backend
-export const syncCartWithBackend = async () => {
-  const { isAuthenticated, cart } = useLittleLemonStore.getState();
-
-  if (!isAuthenticated) {
-    sessionStorage.setItem("cart", JSON.stringify(cart));
-  } else {
-    try {
-      await fetch("/api/cart", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cart }),
-      });
-    } catch (err) {
-      console.error("Error syncing cart:", err);
-    }
-  }
-};
-
-// ✅ Mover esto dentro de una función
 export const getCart = () => useLittleLemonStore.getState().cart;
+
+export const totalItemsCart = () => {
+  const cart = getCart();
+  return cart.reduce((acc, item: CartItem) => acc + item.quantity, 0);
+};
 
 export const quantityItemCart = (itemId: number) => {
   const cart = getCart();
@@ -231,3 +216,48 @@ export async function updateReservationById(data: ReservationAPI) {
     return null;
   }
 }
+
+//Sincronizar el carrito con el backend
+export const syncCartWithBackend = async () => {
+  const { isAuthenticated, cart } = useLittleLemonStore.getState();
+
+  if (!isAuthenticated) {
+    sessionStorage.setItem("cart", JSON.stringify(cart));
+  } else {
+    try {
+      await fetch("/api/cart", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cart }),
+      });
+    } catch (err) {
+      console.error("Error syncing cart:", err);
+    }
+  }
+};
+
+export const getCartFromDB = async () => {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/cart`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        next: { revalidate: 60 },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch cart");
+    }
+
+    const data = await response.json();
+    return data as CartItem[];
+  } catch (error) {
+    console.error("Error fetching cart:", error);
+    return [];
+  }
+};

@@ -1,7 +1,11 @@
-import React from "react";
+import CurrentUserServer from "@/components/public/CurrentUserServer";
 
 const DashboardPage = () => {
-  return <div>page</div>;
+  return (
+    <div>
+      <CurrentUserServer />
+    </div>
+  );
 };
 
 export default DashboardPage;

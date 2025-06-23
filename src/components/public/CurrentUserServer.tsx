@@ -1,18 +1,22 @@
+// components/ServerUserInfo.tsx
 import { getCurrentUser } from "@/libs/auth/getCurrentUser";
-import { redirect } from "next/navigation";
 
 const CurrentUserServer = async () => {
   const user = await getCurrentUser();
 
   if (!user) {
-    redirect("/login");
+    return (
+      <h2 className="text-2xl font-semibold tracking-tight text-gray-900">
+        Welcome to Little Lemon
+      </h2>
+    );
   }
 
-  if (user.role === "ADMIN") {
-    redirect("/admin-panel");
-  }
-
-  return <section>Welcome, {user.name}</section>;
+  return (
+    <h2 className="text-2xl font-semibold tracking-tight text-gray-900">
+      Welcome, {user.name}
+    </h2>
+  );
 };
 
 export default CurrentUserServer;

@@ -49,7 +49,7 @@ export const useAuth = () => {
           const response = await fetch("/api/cart");
           if (response.ok) {
             const data = await response.json();
-            console.log("Fetched cart from backend:", data.cart);
+
             setCart(data.cart || []);
             sessionStorage.removeItem("cart"); // clear session storage cart just if backend cart is fetched successfully
           } else {

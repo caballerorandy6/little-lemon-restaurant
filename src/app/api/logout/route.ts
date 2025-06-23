@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { cookies } from "next/headers";
 
-export async function GET() {
+export async function POST() {
   // crea la respuesta JSON
   const res = NextResponse.json({ message: "Logout successful" });
 

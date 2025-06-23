@@ -6,15 +6,22 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, LoginFormData } from "@/libs/zod";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { useLittleLemonStore } from "@/store/little-lemon-store";
 import { ErrorMessage } from "@hookform/error-message";
 import Spinner from "@/components/public/Spinner";
+import { getCartFromDB } from "@/libs/utils";
+import { useRouter } from "next/navigation";
 
 export default function LoginForm() {
   const router = useRouter();
-  const { setIsAuthenticated, setUser, isLoadingAuth, setIsLoadingAuth } =
-    useLittleLemonStore();
+
+  const {
+    setIsAuthenticated,
+    setUser,
+    isLoadingAuth,
+    setIsLoadingAuth,
+    setCart,
+  } = useLittleLemonStore();
 
   const {
     register,
@@ -32,37 +39,44 @@ export default function LoginForm() {
     try {
       const response = await fetch("/api/login", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
+        credentials: "include",
       });
 
       const result = await response.json();
+
       if (!response.ok) {
         toast.error("Login failed, please check your password or email");
         return;
       }
 
-      // Store the token in local storage
+      // Guardar token en localStorage
       localStorage.setItem("token", result.token);
 
-      // Store the user data in the store
+      // Guardar usuario y estado autenticado en el store
       setUser(result.user);
-
-      // Set the authenticated state
       setIsAuthenticated(true);
 
+      // Obtener y establecer el carrito
+      const cart = await getCartFromDB();
+      setCart(Array.isArray(cart) ? cart : []);
+
+      // Mostrar mensaje
       toast.success("Login successful");
+
+      // Resetear formulario
       reset();
 
-      router.refresh();
+      await router.refresh(); // fuerza rehidratación
+      await new Promise((r) => setTimeout(r, 100)); // opcional: espera breve
 
-      if (result.user.role === "ADMIN") {
-        router.push("/admin-dashboard");
-      } else {
-        router.push("/dashboard");
-      }
+      await router.push(
+        result.user.role === "ADMIN" ? "/admin-dashboard" : "/dashboard"
+      );
+
+      // Spinner OFF solo cuando todo terminó
+      setIsLoadingAuth(false);
     } catch (error) {
       console.error("Error logging in:", error);
       toast.error("An error occurred while logging in");

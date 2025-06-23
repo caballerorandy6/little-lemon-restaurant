@@ -250,11 +250,8 @@ export const useLittleLemonStore = create<LittleLemonStore>()(
           return { cart: updatedCart };
         });
       },
-
       setCart: (cart: CartItem[]) => {
-        set({ cart });
-
-        //syncCartWithBackend();
+        set({ cart: Array.isArray(cart) ? cart : [] });
       },
     }),
     {

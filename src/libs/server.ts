@@ -7,7 +7,10 @@ export async function getCartServerSide(): Promise<CartItem[]> {
   try {
     const cookieStore = await cookies();
     const token = cookieStore.get("token")?.value;
-    if (!token) return [];
+    if (!token) {
+      console.warn("No token found in cookies");
+      return [];
+    }
 
     const payload = jwt.verify(token, process.env.JWT_SECRET!) as {
       id: number;

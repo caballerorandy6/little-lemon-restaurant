@@ -10,15 +10,13 @@ import {
 import { useLittleLemonStore } from "@/store/little-lemon-store";
 import Image from "next/image";
 import Link from "next/link";
-import { useAuth } from "@/libs/hooks/useAuth";
 import Spinner from "./Spinner";
 
 export default function Cart() {
-  const { cart, updateQuantity, emptyCart, removeItems } =
+  const { cart, updateQuantity, emptyCart, removeItems, isLoading } =
     useLittleLemonStore();
-  const { isLoadingAuth } = useAuth();
 
-  if (isLoadingAuth) {
+  if (isLoading) {
     return (
       <div className="flex justify-center items-center min-h-screen">
         <Spinner />

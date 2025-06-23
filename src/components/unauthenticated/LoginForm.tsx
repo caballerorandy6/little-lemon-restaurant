@@ -68,15 +68,12 @@ export default function LoginForm() {
       // Resetear formulario
       reset();
 
-      await router.refresh(); // fuerza rehidratación
-      await new Promise((r) => setTimeout(r, 100)); // opcional: espera breve
+      // fuerza rehidratación
+      await new Promise((r) => setTimeout(r, 200)); // opcional: espera breve
 
-      await router.push(
+      router.push(
         result.user.role === "ADMIN" ? "/admin-dashboard" : "/dashboard"
       );
-
-      // Spinner OFF solo cuando todo terminó
-      setIsLoadingAuth(false);
     } catch (error) {
       console.error("Error logging in:", error);
       toast.error("An error occurred while logging in");

@@ -255,7 +255,8 @@ export const getCartFromDB = async () => {
     }
 
     const data = await response.json();
-    return Array.isArray(data) ? data : [];
+    console.log("Cart fetched from DB:", data);
+    return Array.isArray(data.cart) ? data.cart : [];
   } catch (error) {
     console.error("Error fetching cart:", error);
     return [];

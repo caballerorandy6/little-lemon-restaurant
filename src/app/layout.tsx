@@ -6,7 +6,7 @@ import Navbar from "@/components/public/Navbar";
 import StoreHydration from "@/components/public/StoreHydration";
 import { getCategories, getMealsByCategory, getSingleMeal } from "@/libs/utils";
 import { getCurrentUser } from "@/libs/auth/getCurrentUser";
-import { getCartServerSide } from "@/libs/server";
+// import { getCartServerSide } from "@/libs/server";
 
 const robotoSlab = Roboto_Slab({
   subsets: ["latin"],
@@ -44,7 +44,7 @@ export default async function RootLayout({
     getSingleMeal(categories[0]?.strCategory || "", meals[0]?.strMeal || "")
   );
   const currentUser = await getCurrentUser();
-  const cartFromDBPromise = getCartServerSide();
+  // const cartFromDBPromise = getCartServerSide();
 
   return (
     <html lang="en" className="!scroll-smooth" suppressHydrationWarning>
@@ -57,7 +57,7 @@ export default async function RootLayout({
           mealsByCategoryPromise={mealsByCategoryPromise}
           singleMealPromise={singleMealPromise}
           currentUser={currentUser}
-          cartFromDBPromise={cartFromDBPromise}
+          // cartFromDBPromise={cartFromDBPromise}
         />
         {children}
         <Toaster position="bottom-right" richColors closeButton={true} />

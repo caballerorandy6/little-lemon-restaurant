@@ -3,14 +3,14 @@
 import { use } from "react";
 import { useEffect } from "react";
 import { useLittleLemonStore } from "@/store/little-lemon-store";
-import type { CartItem, CategoryAPI, MealAPI, SafeUser } from "@/libs/types";
+import type { CategoryAPI, MealAPI, SafeUser } from "@/libs/types";
 
 type Props = {
   categoriesPromise: Promise<CategoryAPI[]>;
   mealsByCategoryPromise: Promise<MealAPI[]>;
   singleMealPromise: Promise<MealAPI | null>;
   currentUser: SafeUser | null;
-  cartFromDBPromise: Promise<CartItem[]>;
+  // cartFromDBPromise: Promise<CartItem[]>;
 };
 
 export default function StoreHydration({
@@ -18,14 +18,14 @@ export default function StoreHydration({
   mealsByCategoryPromise,
   singleMealPromise,
   currentUser,
-  cartFromDBPromise,
+  // cartFromDBPromise,
 }: Props) {
   // Usando `use()` para resolver todas las promesas
   const categories = use(categoriesPromise);
   const allMealsByCategory = use(mealsByCategoryPromise);
   const singleMeal = use(singleMealPromise);
   const user = currentUser;
-  const cartFromDB = use(cartFromDBPromise);
+  // const cartFromDB = use(cartFromDBPromise);
 
   const {
     setCategories,
@@ -34,7 +34,7 @@ export default function StoreHydration({
     setMealsByCategory,
     setSingleMeal,
     setUser,
-    setCart,
+    // setCart,
   } = useLittleLemonStore();
 
   // Efecto para establecer los valores en el store
@@ -43,7 +43,7 @@ export default function StoreHydration({
     setMealsByCategory(allMealsByCategory);
     setSingleMeal(singleMeal);
     setUser(user);
-    setCart(cartFromDB);
+    // setCart(cartFromDB);
   }, [
     categories,
     setCategories,
@@ -53,8 +53,8 @@ export default function StoreHydration({
     setSingleMeal,
     user,
     setUser,
-    cartFromDB,
-    setCart,
+    // cartFromDB,
+    // setCart,
   ]);
 
   // Efecto para recuperar el carrito del almacenamiento local
@@ -69,6 +69,13 @@ export default function StoreHydration({
       setSelectedCategory(categories[0]);
     }
   }, [categories, selectedCategory, setSelectedCategory]);
+
+  // Efecto para establecer el carrito desde la base de datos si está disponible
+  // useEffect(() => {
+  //   if (Array.isArray(cartFromDB) && cartFromDB.length > 0) {
+  //     setCart(cartFromDB);
+  //   }
+  // }, [cartFromDB, setCart]);
 
   return null;
 }

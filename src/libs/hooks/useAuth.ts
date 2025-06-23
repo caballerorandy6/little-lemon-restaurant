@@ -14,8 +14,8 @@ export const useAuth = () => {
     isAuthenticated,
     setIsAuthenticated,
     setUser,
-    setCart,
   } = useLittleLemonStore();
+
   const router = useRouter();
 
   useEffect(() => {
@@ -45,20 +45,6 @@ export const useAuth = () => {
           router.push("/login");
         } else {
           setIsAuthenticated(true);
-
-          const response = await fetch("/api/cart");
-          if (response.ok) {
-            const data = await response.json();
-
-            setCart(data.cart || []);
-            sessionStorage.removeItem("cart"); // clear session storage cart just if backend cart is fetched successfully
-          } else {
-            console.error(
-              "Failed to fetch cart from backend:",
-              response.statusText
-            );
-            setCart([]);
-          }
         }
       } catch (error) {
         console.error("Error decoding token:", error);
@@ -72,7 +58,7 @@ export const useAuth = () => {
     };
 
     authenticate();
-  }, [setIsAuthenticated, setIsLoadingAuth, router, setUser, setCart]);
+  }, [setIsAuthenticated, setIsLoadingAuth, router, setUser]);
   return {
     isAuthenticated,
     isLoadingAuth,

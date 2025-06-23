@@ -9,19 +9,13 @@ import { toast } from "sonner";
 import { useLittleLemonStore } from "@/store/little-lemon-store";
 import { ErrorMessage } from "@hookform/error-message";
 import Spinner from "@/components/public/Spinner";
-import { getCartFromDB } from "@/libs/utils";
 import { useRouter } from "next/navigation";
 
 export default function LoginForm() {
   const router = useRouter();
 
-  const {
-    setIsAuthenticated,
-    setUser,
-    isLoadingAuth,
-    setIsLoadingAuth,
-    setCart,
-  } = useLittleLemonStore();
+  const { setIsAuthenticated, setUser, isLoadingAuth, setIsLoadingAuth } =
+    useLittleLemonStore();
 
   const {
     register,
@@ -51,29 +45,20 @@ export default function LoginForm() {
         return;
       }
 
-      // Guardar token en localStorage
       localStorage.setItem("token", result.token);
 
-      // Guardar usuario y estado autenticado en el store
       setUser(result.user);
       setIsAuthenticated(true);
 
-      await getCartFromDB().then((cart) => {
-        setCart(cart);
+      toast.success("Login successful");
+      reset();
 
-        // 3. Esperar brevemente y redirigir
-        setTimeout(() => {
-          toast.success("Login successful");
-          reset();
-
-          // Redirige según el rol
-          if (result.user.role === "ADMIN") {
-            router.replace("/admin-dashboard");
-          } else {
-            router.replace("/dashboard");
-          }
-        }, 200);
-      });
+      // Redirige según el rol
+      if (result.user.role === "ADMIN") {
+        router.replace("/admin-dashboard");
+      } else {
+        router.replace("/dashboard");
+      }
     } catch (error) {
       console.error("Error logging in:", error);
       toast.error("An error occurred while logging in");

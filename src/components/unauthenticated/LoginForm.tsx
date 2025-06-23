@@ -68,10 +68,10 @@ export default function LoginForm() {
       // Resetear formulario
       reset();
 
-      router.refresh(); // fuerza rehidratación
+      await router.refresh(); // fuerza rehidratación
       await new Promise((r) => setTimeout(r, 100)); // opcional: espera breve
 
-      router.push(
+      await router.push(
         result.user.role === "ADMIN" ? "/admin-dashboard" : "/dashboard"
       );
 

@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { ShoppingCartIcon } from "@heroicons/react/16/solid";
-import LoadingItemNumberCartSpinner from "@/components/authenticated/LoadingItemNumberCartSpinner";
 import { getCartFromDB } from "@/libs/utils";
 import { useAuth } from "@/libs/hooks/useAuth";
 import { useEffect } from "react";
@@ -39,7 +38,7 @@ const ShoppingCart = () => {
         <ShoppingCartIcon className="size-6 shrink-0 hover:text-green-600 transition-colors" />
         <span className="ml-2 text-sm font-medium">
           {isLoadingAuth ? (
-            <LoadingItemNumberCartSpinner />
+            <div className="h-4 w-4 rounded bg-gray-100 animate-pulse" />
           ) : isAuthenticated ? (
             totalItems
           ) : (

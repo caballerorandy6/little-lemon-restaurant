@@ -65,8 +65,6 @@ interface LittleLemonStore {
   setSingleMeal: (meal: MealAPI | null) => void;
   mealsByCategory: MealAPI[];
   setMealsByCategory: (meals: MealAPI[]) => void;
-  totalItemsCart: number;
-  setTotalItemsCart: (total: number) => void;
 }
 
 export const useLittleLemonStore = create<LittleLemonStore>()(
@@ -255,8 +253,6 @@ export const useLittleLemonStore = create<LittleLemonStore>()(
       setCart: (cart: CartItem[]) => {
         set({ cart: Array.isArray(cart) ? cart : [] });
       },
-      totalItemsCart: 0,
-      setTotalItemsCart: (total) => set({ totalItemsCart: total }),
     }),
     {
       name: "little-lemon-store",

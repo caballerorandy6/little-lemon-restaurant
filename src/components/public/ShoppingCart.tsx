@@ -11,20 +11,16 @@ const ShoppingCart = () => {
   const setCart = useLittleLemonStore((state) => state.setCart);
   const isAuthenticated = useLittleLemonStore((state) => state.isAuthenticated);
 
-  // Cargar el carrito desde la base de datos si está autenticado y el cart local está vacío
   useEffect(() => {
-    const fetchCartIfNeeded = async () => {
-      if (isAuthenticated && cart.length === 0) {
+    const fetchCart = async () => {
+      if (isAuthenticated) {
         const fetchedCart = await getCartFromDB();
-
-        if (Array.isArray(fetchedCart)) {
-          setCart(fetchedCart);
-        }
+        setCart(fetchedCart);
       }
     };
 
-    fetchCartIfNeeded();
-  }, [isAuthenticated, cart.length, setCart]);
+    fetchCart();
+  }, [isAuthenticated, setCart]);
 
   const totalItems = Array.isArray(cart)
     ? cart.reduce((acc, item) => acc + item.quantity, 0)

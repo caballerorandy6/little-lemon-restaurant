@@ -58,22 +58,22 @@ export default function LoginForm() {
       setUser(result.user);
       setIsAuthenticated(true);
 
-      // Obtener y establecer el carrito
-      const cart = await getCartFromDB();
-      setCart(Array.isArray(cart) ? cart : []);
+      await getCartFromDB().then((cart) => {
+        setCart(cart);
 
-      // Mostrar mensaje
-      toast.success("Login successful");
+        // 3. Esperar brevemente y redirigir
+        setTimeout(() => {
+          toast.success("Login successful");
+          reset();
 
-      // 4. Esperar brevemente para que Zustand hidrate correctamente
-      setTimeout(() => {
-        toast.success("Login successful");
-        router.push(
-          result.user.role === "ADMIN" ? "/admin-dashboard" : "/dashboard"
-        );
-      }, 200); // <- ajusta el delay si es necesario
-
-      reset();
+          // Redirige según el rol
+          if (result.user.role === "ADMIN") {
+            router.replace("/admin-dashboard");
+          } else {
+            router.replace("/dashboard");
+          }
+        }, 200);
+      });
     } catch (error) {
       console.error("Error logging in:", error);
       toast.error("An error occurred while logging in");

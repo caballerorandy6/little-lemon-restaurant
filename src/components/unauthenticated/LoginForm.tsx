@@ -65,15 +65,15 @@ export default function LoginForm() {
       // Mostrar mensaje
       toast.success("Login successful");
 
-      // Resetear formulario
+      // 4. Esperar brevemente para que Zustand hidrate correctamente
+      setTimeout(() => {
+        toast.success("Login successful");
+        router.push(
+          result.user.role === "ADMIN" ? "/admin-dashboard" : "/dashboard"
+        );
+      }, 500); // <- ajusta el delay si es necesario
+
       reset();
-
-      // fuerza rehidratación
-      await new Promise((r) => setTimeout(r, 1000)); // opcional: espera breve
-
-      router.push(
-        result.user.role === "ADMIN" ? "/admin-dashboard" : "/dashboard"
-      );
     } catch (error) {
       console.error("Error logging in:", error);
       toast.error("An error occurred while logging in");

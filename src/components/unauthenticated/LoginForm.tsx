@@ -71,7 +71,7 @@ export default function LoginForm() {
         router.push(
           result.user.role === "ADMIN" ? "/admin-dashboard" : "/dashboard"
         );
-      }, 5000); // <- ajusta el delay si es necesario
+      }, 200); // <- ajusta el delay si es necesario
 
       reset();
     } catch (error) {

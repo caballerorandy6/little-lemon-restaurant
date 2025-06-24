@@ -100,14 +100,14 @@ export async function GET(request: NextRequest) {
       return {
         item: {
           ...meal,
-          price: 10, 
+          price: 10,
         },
         quantity: item.quantity,
         image: meal.strMealThumb || "",
       };
     });
 
-    console.log("Fetched cart Route:", transformedCart);
+    //console.log("Fetched cart Route:", transformedCart);
 
     return NextResponse.json({ cart: transformedCart }, { status: 200 });
   } catch (error) {

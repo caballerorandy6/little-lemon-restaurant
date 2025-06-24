@@ -3,23 +3,11 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import { SafeUser } from "@/libs/types";
 import { CartItem } from "@/libs/types";
 import { CategoryAPI } from "@/libs/types";
-import { MealAPI, ReservationAPI } from "@/libs/types";
-import {
-  getUserReservations,
-  deleteReservationById as deleteReservationByIdAPI,
-  updateReservationById as updateReservationByIdAPI,
-} from "@/libs/utils";
+import { MealAPI } from "@/libs/types";
+
 import { syncCartWithBackend } from "@/libs/utils";
 
 interface LittleLemonStore {
-  editingId: number | null;
-  setEditingId: (id: number | null) => void;
-  editReservationValues: ReservationAPI | null;
-  setEditReservationValues: (values: ReservationAPI | null) => void;
-  updateReservation: (data: ReservationAPI) => Promise<void>;
-  deleteReservationById: (reservationId: number) => Promise<void>;
-  userReservations: ReservationAPI[];
-  fetchUserReservations: () => Promise<void>;
   avatarMenuOpen: boolean;
   setAvatarMenuOpen: (open: boolean) => void;
   landingCategoryDialog: boolean;
@@ -74,15 +62,6 @@ export const useLittleLemonStore = create<LittleLemonStore>()(
       setSingleMeal: (meal) => set({ singleMeal: meal }),
       mealsByCategory: [],
       setMealsByCategory: (meals) => set({ mealsByCategory: meals }),
-      editingId: null,
-      setEditingId: (id) => set({ editingId: id }),
-      editReservationValues: {
-        date: "",
-        time: "",
-        guests: 0,
-      } as ReservationAPI | null,
-      setEditReservationValues: (values) =>
-        set({ editReservationValues: values }),
       avatarMenuOpen: false,
       setAvatarMenuOpen: (open) => set({ avatarMenuOpen: open }),
       landingCategoryDialog: false,
@@ -189,51 +168,6 @@ export const useLittleLemonStore = create<LittleLemonStore>()(
       categories: [],
       setCategories: (categories) => set({ categories }),
 
-      fetchUserReservations: async () => {
-        set({ isLoading: true, userReservations: [] });
-        try {
-          const res = await getUserReservations();
-          set({ userReservations: res || [] });
-        } catch (e) {
-          console.error("Error fetching user reservations:", e);
-          set({ userReservations: [] });
-        } finally {
-          set({ isLoading: false });
-        }
-      },
-      deleteReservationById: async (id) => {
-        set({ isLoading: true });
-        try {
-          const res = await deleteReservationByIdAPI(id);
-          if (!res) throw new Error("Failed to delete reservation");
-          set((state) => ({
-            userReservations: state.userReservations.filter((r) => r.id !== id),
-          }));
-        } catch (e) {
-          console.error("Error deleting reservation:", e);
-        } finally {
-          set({ isLoading: false });
-        }
-      },
-      updateReservation: async (data) => {
-        set({ isLoading: true });
-        try {
-          const updated = await updateReservationByIdAPI(data);
-          if (!updated) throw new Error("Failed to update reservation");
-          set((state) => ({
-            userReservations: state.userReservations.map((r) =>
-              r.id === updated.id ? updated : r
-            ),
-            editingId: null,
-            editReservationValues: null,
-          }));
-        } catch (e) {
-          console.error("Error updating reservation:", e);
-        } finally {
-          set({ isLoading: false });
-        }
-      },
-      userReservations: [],
       updateQuantity: (itemId, newQuantity) => {
         set((state) => {
           const updatedCart = state.cart.map((ci) =>

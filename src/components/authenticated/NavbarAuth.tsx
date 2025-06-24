@@ -35,7 +35,7 @@ const NavbarAuth = () => {
     <header className="fixed inset-x-0 top-0 z-50 bg-white/80 backdrop-blur border-gray-200">
       <nav className="mx-auto max-w-7xl flex items-center justify-between px-6 py-3">
         {/* Logo */}
-        <Link href="/#home" className="flex items-center">
+        <Link href="/dashboard" className="flex items-center">
           <Image
             priority
             width={1000}

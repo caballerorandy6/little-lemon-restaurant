@@ -13,7 +13,7 @@ const ShoppingCart = () => {
 
   useEffect(() => {
     const fetchCart = async () => {
-      console.log("Fetching cart - isAuthenticated:", isAuthenticated);
+      //console.log("Fetching cart - isAuthenticated:", isAuthenticated);
       if (isAuthenticated) {
         try {
           const cartData = await getCartFromDB();
@@ -26,7 +26,7 @@ const ShoppingCart = () => {
     fetchCart();
   }, [isAuthenticated, setCart]);
 
-  console.log("Cart:", cart);
+  //console.log("Cart:", cart);
 
   const totalItems = Array.isArray(cart)
     ? cart.reduce((acc, item) => acc + item.quantity, 0)

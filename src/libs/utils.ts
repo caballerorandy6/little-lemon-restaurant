@@ -2,6 +2,14 @@ import { Meal, Ingredient } from "@/libs/types";
 import { useLittleLemonStore } from "@/store/little-lemon-store";
 import { CartItem, CategoryAPI, MealAPI, ReservationAPI } from "@/libs/types";
 
+export function formatTimeTo12Hour(time24: string): string {
+  const [hourStr, minute] = time24.split(":");
+  const hour = parseInt(hourStr, 10);
+  const period = hour >= 12 ? "PM" : "AM";
+  const hour12 = hour % 12 || 12;
+  return `${hour12}:${minute} ${period}`;
+}
+
 export const getCart = () => useLittleLemonStore.getState().cart;
 
 export const totalItemsCart = () => {
@@ -140,8 +148,12 @@ export async function getSingleMeal(
 }
 
 //Get All Single User Reservation
-export async function getUserReservations(): Promise<ReservationAPI[] | null> {
+export async function getUserReservations(): Promise<ReservationAPI[]> {
   try {
+    console.log(
+      "Fetching from:",
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/reservations`
+    );
     const response = await fetch(
       `${process.env.NEXT_PUBLIC_BASE_URL}/api/reservations`,
       {
@@ -157,10 +169,12 @@ export async function getUserReservations(): Promise<ReservationAPI[] | null> {
       throw new Error("Failed to fetch reservations");
     }
 
-    return await response.json();
+    const data = await response.json();
+    console.log("User reservations fetched:", data.reservations);
+    return Array.isArray(data.reservations) ? data.reservations : [];
   } catch (error) {
     console.error("Error fetching user reservations:", error);
-    return null;
+    return [];
   }
 }
 
@@ -255,7 +269,7 @@ export const getCartFromDB = async () => {
     }
 
     const data = await response.json();
-    console.log("Cart fetched from DB:", data);
+
     return Array.isArray(data.cart) ? data.cart : [];
   } catch (error) {
     console.error("Error fetching cart:", error);

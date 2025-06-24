@@ -53,7 +53,7 @@ export async function GET() {
 
       const mealsData = await res.json();
       if (!mealsData.meals) {
-        console.warn(`⚠️ No meals found for category: ${categoryName}`);
+        console.warn(`No meals found for category: ${categoryName}`);
         continue;
       }
 

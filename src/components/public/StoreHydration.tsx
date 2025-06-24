@@ -3,7 +3,13 @@
 import { use } from "react";
 import { useEffect } from "react";
 import { useLittleLemonStore } from "@/store/little-lemon-store";
-import type { CategoryAPI, MealAPI, SafeUser } from "@/libs/types";
+import { useReservationStore } from "@/store/reservation-store";
+import type {
+  CategoryAPI,
+  MealAPI,
+  SafeUser,
+  ReservationAPI,
+} from "@/libs/types";
 
 type Props = {
   categoriesPromise: Promise<CategoryAPI[]>;
@@ -11,6 +17,7 @@ type Props = {
   singleMealPromise: Promise<MealAPI | null>;
   currentUser: SafeUser | null;
   // cartFromDBPromise: Promise<CartItem[]>;
+  userReservationsPromise: Promise<ReservationAPI[]>;
 };
 
 export default function StoreHydration({
@@ -19,6 +26,7 @@ export default function StoreHydration({
   singleMealPromise,
   currentUser,
   // cartFromDBPromise,
+  userReservationsPromise,
 }: Props) {
   // Usando `use()` para resolver todas las promesas
   const categories = use(categoriesPromise);
@@ -26,6 +34,7 @@ export default function StoreHydration({
   const singleMeal = use(singleMealPromise);
   const user = currentUser;
   // const cartFromDB = use(cartFromDBPromise);
+  const userReservations = use(userReservationsPromise);
 
   const {
     setCategories,
@@ -37,6 +46,8 @@ export default function StoreHydration({
     // setCart,
   } = useLittleLemonStore();
 
+  const { setUserReservations, setIsHydrated } = useReservationStore();
+
   // Efecto para establecer los valores en el store
   useEffect(() => {
     setCategories(categories);
@@ -44,6 +55,8 @@ export default function StoreHydration({
     setSingleMeal(singleMeal);
     setUser(user);
     // setCart(cartFromDB);
+    setUserReservations(userReservations);
+    setIsHydrated(true);
   }, [
     categories,
     setCategories,
@@ -55,6 +68,9 @@ export default function StoreHydration({
     setUser,
     // cartFromDB,
     // setCart,
+    userReservations,
+    setUserReservations,
+    setIsHydrated,
   ]);
 
   // Efecto para recuperar el carrito del almacenamiento local

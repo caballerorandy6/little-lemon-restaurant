@@ -50,7 +50,9 @@ export async function GET() {
       orderBy: { date: "asc" },
     });
 
-    return NextResponse.json(reservations, { status: 200 });
+    console.log("User reservations fetched:", reservations);
+
+    return NextResponse.json({ reservations }, { status: 200 });
   } catch (error) {
     console.error("Error fetching reservations:", error);
     return NextResponse.json(

@@ -1,7 +1,7 @@
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { prisma } from "@/libs/prisma";
-import type { CartItem, Ingredient } from "@/libs/types";
+import type { CartItem, Ingredient, ReservationAPI } from "@/libs/types";
 
 export async function getCartServerSide(): Promise<CartItem[]> {
   try {
@@ -83,6 +83,41 @@ export async function getCartServerSide(): Promise<CartItem[]> {
     }));
   } catch (error) {
     console.error("getCartServerSide error:", error);
+    return [];
+  }
+}
+
+export async function getUserReservationsServerSide(): Promise<
+  ReservationAPI[]
+> {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+    if (!token) {
+      return [];
+    }
+
+    const payload = jwt.verify(token, process.env.JWT_SECRET!) as {
+      id: number;
+    };
+
+    const user = await prisma.user.findUnique({
+      where: { id: payload.id },
+      include: {
+        reservations: true,
+      },
+    });
+    return (
+      user?.reservations.map((reservation) => ({
+        id: reservation.id,
+        date: reservation.date.toISOString().split("T")[0],
+        time: reservation.time,
+        guests: reservation.guests,
+        userId: reservation.userId,
+      })) || []
+    );
+  } catch (error) {
+    console.error("getUserReservations error:", error);
     return [];
   }
 }

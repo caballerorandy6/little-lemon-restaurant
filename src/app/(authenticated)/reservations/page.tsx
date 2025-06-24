@@ -1,4 +1,3 @@
-import { Suspense } from "react";
 import { Metadata } from "next";
 import ReservationForm from "@/components/authenticated/ReservationForm";
 import ReservationList from "@/components/authenticated/ReservationList";
@@ -12,9 +11,7 @@ const ReservationPage = () => {
   return (
     <>
       <ReservationForm />
-      <Suspense fallback={<div>Loading reservations...</div>}>
-        <ReservationList />
-      </Suspense>
+      <ReservationList />
     </>
   );
 };

@@ -80,13 +80,19 @@ const RegisterForm = () => {
             >
               {/* Full Name */}
               <div>
+                <label
+                  htmlFor="fullName"
+                  className="block text-sm font-medium text-gray-900"
+                >
+                  Full Name
+                </label>
                 <div className="mt-2">
                   <input
                     placeholder="Full Name"
                     id="fullName"
                     {...register("name")}
                     autoComplete="name"
-                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 border border-gray-300 placeholder:text-gray-400 sm:text-sm focus:outline-none focus:ring-1 focus:ring-gray-200 focus:border-gray-300"
                   />
                   <ErrorMessage
                     name="name"
@@ -100,6 +106,12 @@ const RegisterForm = () => {
 
               {/* Email */}
               <div>
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-gray-900"
+                >
+                  Email Address
+                </label>
                 <div className="mt-2">
                   <input
                     placeholder="Email"
@@ -107,7 +119,7 @@ const RegisterForm = () => {
                     type="email"
                     {...register("email")}
                     autoComplete="email"
-                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 border border-gray-300 placeholder:text-gray-400 sm:text-sm focus:outline-none focus:ring-1 focus:ring-gray-200 focus:border-gray-300"
                   />
                   <ErrorMessage
                     name="email"
@@ -121,6 +133,12 @@ const RegisterForm = () => {
 
               {/* Password */}
               <div>
+                <label
+                  htmlFor="password"
+                  className="block text-sm font-medium text-gray-900"
+                >
+                  Password
+                </label>
                 <div className="mt-2">
                   <input
                     placeholder="Password"
@@ -128,7 +146,7 @@ const RegisterForm = () => {
                     type="password"
                     {...register("password")}
                     autoComplete="new-password"
-                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 border border-gray-300 placeholder:text-gray-400 sm:text-sm focus:outline-none focus:ring-1 focus:ring-gray-200 focus:border-gray-300"
                   />
                   <ErrorMessage
                     name="password"
@@ -142,6 +160,12 @@ const RegisterForm = () => {
 
               {/* Confirm Password */}
               <div>
+                <label
+                  htmlFor="confirmPassword"
+                  className="block text-sm font-medium text-gray-900"
+                >
+                  Confirm Password
+                </label>
                 <div className="mt-2">
                   <input
                     placeholder="Confirm Password"
@@ -149,7 +173,7 @@ const RegisterForm = () => {
                     type="password"
                     {...register("confirmPassword")}
                     autoComplete="new-password"
-                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm/6"
+                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 border border-gray-300 placeholder:text-gray-400 sm:text-sm focus:outline-none focus:ring-1 focus:ring-gray-200 focus:border-gray-300"
                   />
                   <ErrorMessage
                     name="confirmPassword"

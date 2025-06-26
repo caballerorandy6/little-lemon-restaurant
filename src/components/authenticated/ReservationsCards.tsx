@@ -71,7 +71,21 @@ export default function ReservationsCards() {
                     {reservation.guests}
                   </td>
                   <td className="hidden px-3 py-4 text-sm text-gray-500 md:table-cell">
-                    {reservation.status}
+                    {reservation.status === "ACTIVE" ? (
+                      <span className="text-green-700 font-semibold bg-green-200 rounded-md px-2 py-1">
+                        ACTIVE
+                      </span>
+                    ) : reservation.status === "EXPIRED" ? (
+                      <span className="text-gray-500 font-semibold bg-gray-200 rounded-md px-2 py-1">
+                        EXPIRED
+                      </span>
+                    ) : reservation.status === "CANCELLED" ? (
+                      <span className="text-red-500 font-semibold bg-red-200 rounded-md px-2 py-1">
+                        CANCELLED
+                      </span>
+                    ) : (
+                      reservation.status
+                    )}
                   </td>
                 </tr>
               ))}

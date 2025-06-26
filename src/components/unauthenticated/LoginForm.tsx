@@ -95,7 +95,7 @@ export default function LoginForm() {
                   htmlFor="email"
                   className="block text-sm font-medium text-gray-900"
                 >
-                  Email address
+                  Email Address
                 </label>
                 <div className="mt-2">
                   <input
@@ -103,7 +103,7 @@ export default function LoginForm() {
                     id="email"
                     type="email"
                     autoComplete="email"
-                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-green-600 sm:text-sm"
+                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 border border-gray-300 placeholder:text-gray-400 sm:text-sm focus:outline-none focus:ring-1 focus:ring-gray-200 focus:border-gray-300"
                   />
                   <ErrorMessage
                     errors={errors}
@@ -128,7 +128,7 @@ export default function LoginForm() {
                     id="password"
                     type="password"
                     autoComplete="current-password"
-                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-green-600 sm:text-sm"
+                    className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 border border-gray-300 placeholder:text-gray-400 sm:text-sm focus:outline-none focus:ring-1 focus:ring-gray-200 focus:border-gray-300"
                   />
                   <ErrorMessage
                     errors={errors}
@@ -143,14 +143,14 @@ export default function LoginForm() {
               <div className="flex items-center justify-between">
                 <Link
                   href="/signup"
-                  className="text-sm font-semibold text-yellow-500 hover:text-yellow-600 transition-colors"
+                  className="text-sm font-semibold text-yellow-600 hover:text-yellow-700 transition-colors"
                 >
                   Create new account!
                 </Link>
 
                 <Link
                   href="/forgot-password"
-                  className="text-sm font-semibold text-green-600 hover:text-green-700 transition-colors"
+                  className="text-sm font-semibold text-green-700 hover:text-green-800 transition-colors"
                 >
                   Forgot password?
                 </Link>

@@ -8,7 +8,7 @@ import { loginSchema, LoginFormData } from "@/libs/zod";
 import { toast } from "sonner";
 import { useLittleLemonStore } from "@/store/little-lemon-store";
 import { ErrorMessage } from "@hookform/error-message";
-import Spinner from "@/components/public/Spinner";
+import Spinner from "@/components/spinners/Spinner";
 import { useRouter } from "next/navigation";
 
 export default function LoginForm() {

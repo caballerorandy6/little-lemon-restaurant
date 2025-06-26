@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/libs/prisma";
 import { getCurrentUser } from "@/libs/auth/getCurrentUser";
 
+// Create a new reservation for the current user
 export async function POST(request: NextRequest) {
   const user = await getCurrentUser();
   try {
@@ -38,6 +39,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// Get all reservations for the current user
 export async function GET() {
   const user = await getCurrentUser();
   try {
@@ -62,6 +64,7 @@ export async function GET() {
   }
 }
 
+// This function deletes the reservation of the current user
 export async function DELETE() {
   const user = await getCurrentUser();
   try {
@@ -109,9 +112,9 @@ export async function PUT(request: NextRequest) {
     }
 
     const body = await request.json();
-    const { id, date, time, guests } = body;
+    const { id, date, time, guests, status } = body;
 
-    if (!id || !date || !time || !guests) {
+    if (!id || !date || !time || !guests || !status) {
       return NextResponse.json(
         { error: "ID, date, time, and guests are required" },
         { status: 400 }
@@ -129,14 +132,19 @@ export async function PUT(request: NextRequest) {
       );
     }
 
+    console.log("Existing reservation found:", existing);
+
     const reservation = await prisma.reservation.update({
       where: { id },
       data: {
         date: new Date(date),
-        time: time,
-        guests: guests,
+        time,
+        guests,
+        status: status || existing.status,
       },
     });
+
+    console.log("Reservation updated:", reservation);
 
     return NextResponse.json(reservation, { status: 200 });
   } catch (error) {

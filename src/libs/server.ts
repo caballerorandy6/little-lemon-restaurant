@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import { prisma } from "@/libs/prisma";
 import type { CartItem, Ingredient, ReservationAPI } from "@/libs/types";
 
+// Esta función obtiene el carrito del usuario desde el servidor
 export async function getCartServerSide(): Promise<CartItem[]> {
   try {
     const cookieStore = await cookies();
@@ -87,6 +88,7 @@ export async function getCartServerSide(): Promise<CartItem[]> {
   }
 }
 
+// Esta función obtiene las reservaciones del usuario desde el servidor
 export async function getUserReservationsServerSide(): Promise<
   ReservationAPI[]
 > {
@@ -114,10 +116,44 @@ export async function getUserReservationsServerSide(): Promise<
         time: reservation.time,
         guests: reservation.guests,
         userId: reservation.userId,
+        status: reservation.status,
       })) || []
     );
   } catch (error) {
     console.error("getUserReservations error:", error);
     return [];
   }
+}
+
+// Esta función actualiza las reservaciones expiradas a "EXPIRED"
+export async function updateExpiredReservations() {
+  const now = new Date();
+
+  const expiredReservations = await prisma.reservation.findMany({
+    where: {
+      status: "ACTIVE",
+    },
+  });
+
+  const expiredIds = expiredReservations
+    .filter((res) => {
+      const fullDateTime = new Date(
+        `${res.date.toISOString().split("T")[0]}T${res.time}`
+      );
+      return fullDateTime < now;
+    })
+    .map((res) => res.id);
+
+  if (expiredIds.length > 0) {
+    await prisma.reservation.updateMany({
+      where: {
+        id: { in: expiredIds },
+      },
+      data: {
+        status: "EXPIRED",
+      },
+    });
+  }
+
+  return expiredIds;
 }

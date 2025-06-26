@@ -1,7 +1,12 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { ReservationAPI } from "@/libs/types";
-import { deleteReservationById, updateReservationById } from "@/libs/utils";
+import {} from "../libs/utils";
+import {
+  deleteReservationById,
+  updateReservationById,
+  isReservationExpired,
+} from "@/libs/utils";
 
 interface ReservationStore {
   userReservations: ReservationAPI[];
@@ -27,8 +32,23 @@ export const useReservationStore = create<ReservationStore>()(
 
       userReservations: [],
 
-      setUserReservations: (reservations) =>
-        set({ userReservations: reservations }),
+      setUserReservations: async (reservations) => {
+        const updatedReservations = await Promise.all(
+          reservations.map(async (res) => {
+            const isExpiredNow = isReservationExpired(res);
+            if (isExpiredNow && res.status === "ACTIVE") {
+              const updated = await updateReservationById({
+                ...res,
+                status: "EXPIRED",
+              });
+              return updated ?? { ...res, status: "EXPIRED" }; // fallback si falla
+            }
+            return res;
+          })
+        );
+
+        set({ userReservations: updatedReservations });
+      },
 
       deleteReservationById: async (id) => {
         set({ isLoading: true });
@@ -57,6 +77,8 @@ export const useReservationStore = create<ReservationStore>()(
             editingId: null,
             editReservationValues: null,
           }));
+
+          console.log("Reservation updated successfully:", updated);
         } catch (e) {
           console.error("Error updating reservation:", e);
         } finally {
@@ -72,7 +94,10 @@ export const useReservationStore = create<ReservationStore>()(
         date: "",
         time: "",
         guests: 0,
-      } as ReservationAPI | null,
+        id: 0,
+        userId: 0,
+        status: "ACTIVE",
+      },
 
       setEditReservationValues: (values) =>
         set({ editReservationValues: values }),

@@ -2,6 +2,44 @@ import { Meal, Ingredient } from "@/libs/types";
 import { useLittleLemonStore } from "@/store/little-lemon-store";
 import { CartItem, CategoryAPI, MealAPI, ReservationAPI } from "@/libs/types";
 
+// Function to sort reservations by date and time in descending order
+export const sortedReservations = (reservations: ReservationAPI[]) =>
+  reservations.sort((a: ReservationAPI, b: ReservationAPI) => {
+    const aDateTime = new Date(`${a.date}T${a.time}`);
+    const bDateTime = new Date(`${b.date}T${b.time}`);
+    return bDateTime.getTime() - aDateTime.getTime();
+  });
+
+// Function to check if a reservation is expired
+export function isReservationExpired(reservation: ReservationAPI): boolean {
+  if (reservation.status !== "ACTIVE") return false;
+
+  const reservationDateTime = new Date(
+    `${reservation.date}T${reservation.time}`
+  );
+
+  return reservationDateTime < new Date();
+}
+
+// Function to check if a reservation is active or expired
+export async function autoExpireReservations(reservations: ReservationAPI[]) {
+  const now = new Date();
+
+  for (const reservation of reservations) {
+    const reservationDateTime = new Date(
+      `${reservation.date}T${reservation.time}`
+    );
+
+    if (reservationDateTime < now && reservation.status === "ACTIVE") {
+      await updateReservationById({
+        ...reservation,
+        status: "EXPIRED",
+      });
+    }
+  }
+}
+
+// Function to format time from 24-hour to 12-hour format
 export function formatTimeTo12Hour(time24: string): string {
   const [hourStr, minute] = time24.split(":");
   const hour = parseInt(hourStr, 10);
@@ -9,6 +47,18 @@ export function formatTimeTo12Hour(time24: string): string {
   const hour12 = hour % 12 || 12;
   return `${hour12}:${minute} ${period}`;
 }
+
+// Date formatter for displaying dates in a user-friendly format
+export const formatter = new Intl.DateTimeFormat("en-US", {
+  timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+  dateStyle: "medium",
+  timeStyle: "short",
+});
+
+export const formatDateToDDMMYYYY = (isoDate: string) => {
+  const [year, month, day] = isoDate.split("-");
+  return `${day}/${month}/${year}`;
+};
 
 export const getCart = () => useLittleLemonStore.getState().cart;
 

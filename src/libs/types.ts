@@ -128,8 +128,7 @@ export type ReservationAPI = {
   date: string; // o Date
   time: string;
   guests: number;
-  // createdAt: string; // o Date
-  // user?: User;
+  status: "ACTIVE" | "EXPIRED" | "CANCELLED";
 };
 
 export type Ingredient = {

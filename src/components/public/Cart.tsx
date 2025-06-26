@@ -10,7 +10,7 @@ import {
 import { useLittleLemonStore } from "@/store/little-lemon-store";
 import Image from "next/image";
 import Link from "next/link";
-import Spinner from "./Spinner";
+import Spinner from "../spinners/Spinner";
 
 export default function Cart() {
   const { cart, updateQuantity, emptyCart, removeItems, isLoading } =

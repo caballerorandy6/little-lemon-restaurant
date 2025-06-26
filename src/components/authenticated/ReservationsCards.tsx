@@ -42,6 +42,12 @@ export default function ReservationsCards() {
                 >
                   Guests
                 </th>
+                <th
+                  scope="col"
+                  className="hidden px-3 py-3.5 text-left text-sm font-semibold text-gray-900 md:table-cell"
+                >
+                  Status
+                </th>
 
                 <th scope="col" className="relative py-3.5 pl-3">
                   <span className="sr-only">Edit</span>
@@ -52,7 +58,9 @@ export default function ReservationsCards() {
               {userReservations.map((reservation) => (
                 <tr key={reservation.id}>
                   <td className="relative py-4 pr-3 text-sm font-medium text-gray-900">
-                    {reservation.date}
+                    {new Date(
+                      `${reservation.date}T12:00:00`
+                    ).toLocaleDateString("en-US")}
                     <div className="absolute right-full bottom-0 h-px w-screen bg-gray-100" />
                     <div className="absolute bottom-0 left-0 h-px w-screen bg-gray-100" />
                   </td>
@@ -61,6 +69,9 @@ export default function ReservationsCards() {
                   </td>
                   <td className="hidden px-3 py-4 text-sm text-gray-500 md:table-cell">
                     {reservation.guests}
+                  </td>
+                  <td className="hidden px-3 py-4 text-sm text-gray-500 md:table-cell">
+                    {reservation.status}
                   </td>
                 </tr>
               ))}

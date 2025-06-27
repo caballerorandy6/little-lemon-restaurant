@@ -1,6 +1,5 @@
 import { NextResponse, NextRequest } from "next/server";
 import jwt from "jsonwebtoken";
-import { Review } from "@/libs/types";
 import { prisma } from "@/libs/prisma";
 import { reviewSchema } from "@/libs/zod";
 

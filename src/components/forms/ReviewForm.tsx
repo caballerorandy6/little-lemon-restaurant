@@ -13,7 +13,7 @@ import { useReviewStore } from "@/store/review-store";
 
 const ReviewForm = () => {
   const { user } = useLittleLemonStore();
-  const { showReviewForm, setShowReviewForm } = useReviewStore();
+  const {  setShowReviewForm } = useReviewStore();
 
   const router = useRouter();
 

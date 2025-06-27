@@ -70,6 +70,7 @@ export const reviewSchema = z.object({
     .string()
     .min(2, "Comment is required")
     .max(500, "Comment must be less than 500 characters"),
+  mealId: z.number(),
 });
 
 export type UserFormData = z.infer<typeof userSchema>;

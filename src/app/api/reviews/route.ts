@@ -29,6 +29,7 @@ export async function POST(request: NextRequest) {
       data: {
         ...parsed.data,
         userId: payload.id,
+        mealId: parsed.data
       },
     });
 

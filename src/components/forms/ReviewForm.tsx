@@ -13,7 +13,7 @@ import { useReviewStore } from "@/store/review-store";
 
 const ReviewForm = () => {
   const { user } = useLittleLemonStore();
-  const {  setShowReviewForm } = useReviewStore();
+  const { setShowReviewForm } = useReviewStore();
 
   const router = useRouter();
 
@@ -125,6 +125,12 @@ const ReviewForm = () => {
           </div>
         </div>
       </div>
+
+      <input
+        type="hidden"
+        value={1} // o el ID que asignaste al meal general
+        {...register("mealId", { valueAsNumber: true })}
+      />
 
       <div className="mt-10">
         <button

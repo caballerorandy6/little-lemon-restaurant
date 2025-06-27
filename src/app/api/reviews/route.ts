@@ -27,9 +27,10 @@ export async function POST(request: NextRequest) {
 
     const review = await prisma.review.create({
       data: {
-        ...parsed.data,
         userId: payload.id,
-        mealId: parsed.data
+        rating: parsed.data.rating,
+        comment: parsed.data.comment,
+        mealId: parsed.data.mealId,
       },
     });
 

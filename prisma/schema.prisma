@@ -73,8 +73,8 @@ model Review {
   id         Int     @id @default(autoincrement())
   user       User    @relation(fields: [userId], references: [id])
   userId     Int
-  meal       Meal?    @relation(fields: [mealId], references: [id])
-  mealId     Int?
+  meal       Meal    @relation(fields: [mealId], references: [id])
+  mealId     Int
   rating     Int     // de 1 a 5 por ejemplo
   comment    String
   createdAt  DateTime  @default(now())

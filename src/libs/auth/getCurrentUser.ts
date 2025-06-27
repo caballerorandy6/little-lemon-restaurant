@@ -38,16 +38,13 @@ export async function getCurrentUser(): Promise<SafeUser | null> {
         }))
       : [],
     reviews: user?.reviews
-      ? user.reviews
-          .filter((r) => r.mealId !== null)
-          .map((r) => ({
-            ...r,
-            mealId: r.mealId as number,
-            createdAt:
-              r.createdAt instanceof Date
-                ? r.createdAt.toISOString()
-                : r.createdAt,
-          }))
+      ? user.reviews.map((r) => ({
+          ...r,
+          createdAt:
+            r.createdAt instanceof Date
+              ? r.createdAt.toISOString()
+              : r.createdAt,
+        }))
       : [],
     createdAt: user?.createdAt.toISOString(),
     updatedAt: user?.updatedAt.toISOString(),

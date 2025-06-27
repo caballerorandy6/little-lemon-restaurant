@@ -1,14 +1,20 @@
 "use client";
 
+import { useEffect } from "react";
 import { useReservationStore } from "@/store/reservation-store";
 import { useLittleLemonStore } from "@/store/little-lemon-store";
-import { formatTimeTo12Hour, isReservationExpired } from "@/libs/utils";
+import {
+  formatTimeTo12Hour,
+  getUserReservations,
+  isReservationExpired,
+} from "@/libs/utils";
 import ReservationListSkeleton from "../skeletons/ReservationListSkeleton";
 import { ReservationAPI } from "@/libs/types";
 import clsx from "clsx";
 import { toast } from "sonner";
 import { sortedReservations } from "@/libs/utils";
 import SmallSpinner from "@/components/spinners/SmallSpinner";
+import { useAuth } from "@/libs/hooks/useAuth";
 
 export default function ReservationList() {
   const {
@@ -20,11 +26,27 @@ export default function ReservationList() {
     editReservationValues,
     setEditReservationValues,
     isHydrated,
+    setUserReservations,
   } = useReservationStore();
 
   const { user } = useLittleLemonStore();
+  const { isAuthenticated } = useAuth();
 
   //console.log("User Reservations:", userReservations);
+
+  useEffect(() => {
+    const fetchReservations = async () => {
+      if (isAuthenticated) {
+        try {
+          const reservationData = await getUserReservations();
+          setUserReservations(reservationData);
+        } catch (err) {
+          console.error("Cart fetch failed:", err);
+        }
+      }
+    };
+    fetchReservations();
+  }, [isAuthenticated, setUserReservations]);
 
   return (
     <section className="bg-white/80 backdrop-blur p-8 rounded-lg shadow-md max-w-4xl mx-auto mt-10 mb-20">

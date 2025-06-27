@@ -1,6 +1,6 @@
 const SmallSpinner = () => {
   return (
-    <div className="w-4 h-4 border-2 border-t-transparent border-green-700 rounded-full animate-spin"></div>
+    <div className="w-6 h-6 border-2 border-t-transparent border-yellow-500 rounded-full animate-spin" />
   );
 };
 

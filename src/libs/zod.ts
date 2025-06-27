@@ -61,9 +61,21 @@ export const reservationSchema = z.object({
     .max(50, "Maximum 50 guests"),
 });
 
+export const reviewSchema = z.object({
+  rating: z.coerce
+    .number({ invalid_type_error: "Rating must be a number" })
+    .min(1)
+    .max(5),
+  comment: z
+    .string()
+    .min(2, "Comment is required")
+    .max(500, "Comment must be less than 500 characters"),
+});
+
 export type UserFormData = z.infer<typeof userSchema>;
 export type LoginFormData = z.infer<typeof loginSchema>;
 export type ContactFormData = z.infer<typeof contactSchema>;
 export type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
 export type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
 export type ReservationFormData = z.infer<typeof reservationSchema>;
+export type ReviewFormData = z.infer<typeof reviewSchema>;

@@ -1,49 +1,11 @@
 "use client";
 
 import Image from "next/image";
-
-import { useForm } from "react-hook-form";
-import { ErrorMessage } from "@hookform/error-message";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
-import { ContactFormData, contactSchema } from "@/libs/zod";
-import { useLittleLemonStore } from "@/store/little-lemon-store";
 import useSectionObserver from "@/libs/hooks/useSectionObserver";
+import ContactForm from "@/components/forms/ContactForm";
 
 export default function Contact() {
-  const { isLoading, setIsLoading } = useLittleLemonStore();
-
   const ref = useSectionObserver({ sectionName: "Contact" });
-
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    reset,
-  } = useForm<ContactFormData>({
-    resolver: zodResolver(contactSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      phone: "",
-      message: "",
-    },
-  });
-
-  const onSubmit = async (data: ContactFormData) => {
-    setIsLoading(true);
-    try {
-      await new Promise((resolve) => setTimeout(resolve, 3000));
-      console.log("Form data:", data);
-      toast.success("Message sent successfully");
-      reset();
-    } catch (error) {
-      console.error("Error sending message:", error);
-      toast.error("Failed to send message");
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <section
@@ -91,97 +53,7 @@ export default function Contact() {
         </p>
 
         <div className="mt-16 flex flex-col gap-16 sm:gap-y-20 md:flex-row md:items-start md:gap-24">
-          <form
-            onSubmit={handleSubmit(onSubmit)}
-            className="space-y-6 w-full md:w-5/12"
-          >
-            {/* Name input  */}
-            <div>
-              <div className="mt-2">
-                <input
-                  {...register("name")}
-                  placeholder="Name"
-                  id="name"
-                  type="name"
-                  autoComplete="name"
-                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm"
-                />
-                <ErrorMessage
-                  name="name"
-                  errors={errors}
-                  render={({ message }) => (
-                    <p className="text-sm text-red-500">{message}</p>
-                  )}
-                />
-              </div>
-            </div>
-
-            {/* Email input */}
-            <div>
-              <div className="mt-2">
-                <input
-                  {...register("email")}
-                  placeholder="Email"
-                  id="email"
-                  type="email"
-                  autoComplete="email"
-                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm"
-                />
-                <ErrorMessage
-                  name="email"
-                  errors={errors}
-                  render={({ message }) => (
-                    <p className="text-sm text-red-500">{message}</p>
-                  )}
-                />
-              </div>
-            </div>
-
-            {/* Phone input */}
-            <div>
-              <div className="mt-2">
-                <input
-                  {...register("phone")}
-                  placeholder="Phone"
-                  id="phone"
-                  type="phone"
-                  autoComplete="phone"
-                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm"
-                />
-                <ErrorMessage
-                  name="phone"
-                  errors={errors}
-                  render={({ message }) => (
-                    <p className="text-sm text-red-500">{message}</p>
-                  )}
-                />
-              </div>
-            </div>
-
-            <div>
-              <div className="mt-2">
-                <textarea
-                  {...register("message")}
-                  placeholder="Message"
-                  id="message"
-                  autoComplete="message"
-                  className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 placeholder:text-gray-400 focus:outline-2 focus:-outline-offset-2 focus:outline-indigo-600 sm:text-sm"
-                />
-              </div>
-            </div>
-
-            {/* Submit button */}
-            <div>
-              <button
-                type="submit"
-                className="flex w-full justify-center rounded-md bg-green-800 px-3 py-1.5 text-sm/6 font-semibold text-white shadow-xs hover:bg-green-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 transition-colors cursor-pointer"
-              >
-                {isLoading ? "Sending..." : "Send Message"}
-              </button>
-            </div>
-          </form>
-
-          {/* Image and text */}
+          <ContactForm />
           <div className="w-full md:w-7/12">
             <Image
               priority={false}

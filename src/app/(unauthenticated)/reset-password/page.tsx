@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import ResetPasswordForm from "@/components/unauthenticated/ResetPasswordForm";
+import ResetPasswordForm from "@/components/forms/ResetPasswordForm";
 import ResetPasswordFormSkeleton from "@/components/skeletons/ResetPasswordFormSkeleton";
 
 const ResetPasswordPage = () => {

@@ -15,8 +15,8 @@ const navigation = [
   { name: "Dashboard", href: "/dashboard" },
   { name: "Menu", href: "/menu" },
   { name: "Reservations", href: "/reservations" },
-  { name: "Reviews", href: "/#reviews" },
-  { name: "Contact", href: "/#contact" },
+  { name: "Reviews", href: "/reviews" },
+  { name: "Contact", href: "/contact" },
 ];
 
 const NavbarAuth = () => {

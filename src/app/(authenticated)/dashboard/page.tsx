@@ -4,7 +4,7 @@ import CurrentUserClient from "@/components/public/CurrentUserClient";
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import MealsCards from "@/components/authenticated/MealsCards";
 import ProfileInfo from "@/components/authenticated/ProfileInfo";
-import ReservationsCards from "@/components/authenticated/ReservationsCards";
+import ReservationList from "@/components/authenticated/ReservationList";
 import ReviewsCards from "@/components/authenticated/ReviewsCards";
 import { useDashboardStore } from "@/store/dashboard-store";
 import { useLittleLemonStore } from "@/store/little-lemon-store";
@@ -112,7 +112,7 @@ function DashboardPage() {
           </div>
         </div>
         <div className="mt-4">
-          {activeTab === "Reservations" && <ReservationsCards />}
+          {activeTab === "Reservations" && <ReservationList />}
           {activeTab === "My Cart" && <MealsCards />}
           {activeTab === "Profile Info" && <ProfileInfo />}
           {activeTab === "Reviews" && <ReviewsCards />}

@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
 import useSectionObserver from "@/libs/hooks/useSectionObserver";
+import GreenButton from "@/components/buttons-links/GreenButton";
+import YellowButton from "@/components/buttons-links/YellowButton";
 
 export default function Hero() {
   const ref = useSectionObserver({ sectionName: "Home" });
@@ -69,18 +70,10 @@ export default function Hero() {
                     reconnect, and indulge in something special.
                   </p>
                   <div className="mt-10 flex items-center gap-x-6">
-                    <Link
-                      href="/#reservation"
-                      className="rounded-md bg-green-800 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-green-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 transition-colors"
-                    >
-                      Order Now
-                    </Link>
-                    <Link
-                      href="/#public-menu"
-                      className="text-sm/6 font-semibold text-white hover:bg-yellow-500 px-3.5 py-2 shadow-xs bg-yellow-400 tfocus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-yellow-500 transition-colors rounded-md"
-                    >
+                    <GreenButton href="/#reservation">Order Now</GreenButton>
+                    <YellowButton href="/#public-menu">
                       Our Menu <span aria-hidden="true">→</span>
-                    </Link>
+                    </YellowButton>
                   </div>
                 </div>
                 <div className="mt-14 flex justify-end gap-8 sm:-mt-44 sm:justify-start sm:pl-20 lg:mt-0 lg:pl-0">

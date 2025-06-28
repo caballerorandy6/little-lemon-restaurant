@@ -4,7 +4,7 @@ import { Review } from "@/libs/types";
 
 interface ReviewStore {
   reviews: Review[];
-  setReviews: (reviews: Review[]) => void;
+  setReviews: (value: Review[] | ((prev: Review[]) => Review[])) => void;
   addReview: (review: Review) => void;
   removeReview: (id: number) => void;
   updateReview: (updatedReview: Review) => void;
@@ -12,6 +12,8 @@ interface ReviewStore {
   setHydrated: (hydrated: boolean) => void;
   showReviewForm: boolean;
   setShowReviewForm: (show: boolean) => void;
+  hovered: number | null;
+  setHovered: (id: number | null) => void;
 }
 
 export const useReviewStore = create<ReviewStore>()(
@@ -19,7 +21,11 @@ export const useReviewStore = create<ReviewStore>()(
     (set) => ({
       reviews: [],
 
-      setReviews: (reviews) => set({ reviews }),
+      setReviews: (reviews) =>
+        set((state) => ({
+          reviews:
+            typeof reviews === "function" ? reviews(state.reviews) : reviews,
+        })),
 
       addReview: (review) =>
         set((state) => ({ reviews: [...state.reviews, review] })),
@@ -43,6 +49,10 @@ export const useReviewStore = create<ReviewStore>()(
       showReviewForm: false,
 
       setShowReviewForm: (show) => set({ showReviewForm: show }),
+
+      hovered: null,
+
+      setHovered: (id) => set({ hovered: id }),
     }),
     {
       name: "review-storage",

@@ -4,7 +4,12 @@ import { Suspense } from "react";
 import SingleMeal from "@/components/public/SingleMeal";
 import StoreHydration from "@/components/public/StoreHydration";
 import SingleMealSkeleton from "@/components/skeletons/SingleMealSkeleton";
-import { getSingleMeal, getCategories, getMealsByCategory } from "@/libs/utils";
+import {
+  getSingleMeal,
+  getCategories,
+  getMealsByCategory,
+  getReviews,
+} from "@/libs/utils";
 import { getCurrentUser } from "@/libs/auth/getCurrentUser";
 import { getUserReservationsServerSide } from "@/libs/server";
 
@@ -48,6 +53,7 @@ export default function MealPage({ params }: { params: Params }) {
         currentUser={use(getCurrentUser())}
         // cartFromDBPromise={getCartServerSide()}
         userReservationsPromise={getUserReservationsServerSide()}
+        userReviewsPromise={getReviews()}
       />
       <SingleMeal />
     </Suspense>

@@ -326,3 +326,30 @@ export const getCartFromDB = async () => {
     return [];
   }
 };
+
+export const getReviews = async () => {
+  try {
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/api/reviews`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        next: { revalidate: 60 },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch reviews");
+    }
+
+    const data = await response.json();
+
+    return Array.isArray(data.reviews) ? data.reviews : [];
+  } catch (error) {
+    console.error("Error fetching reviews:", error);
+    return [];
+  }
+};

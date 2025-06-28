@@ -1,14 +1,16 @@
 "use client";
 
 import { use } from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useLittleLemonStore } from "@/store/little-lemon-store";
 import { useReservationStore } from "@/store/reservation-store";
+import { useReviewStore } from "@/store/review-store";
 import type {
   CategoryAPI,
   MealAPI,
   SafeUser,
   ReservationAPI,
+  Review,
 } from "@/libs/types";
 
 type Props = {
@@ -18,6 +20,7 @@ type Props = {
   currentUser: SafeUser | null;
   // cartFromDBPromise: Promise<CartItem[]>;
   userReservationsPromise: Promise<ReservationAPI[]>;
+  userReviewsPromise: Promise<Review[]>;
 };
 
 export default function StoreHydration({
@@ -27,36 +30,44 @@ export default function StoreHydration({
   currentUser,
   // cartFromDBPromise,
   userReservationsPromise,
+  userReviewsPromise,
 }: Props) {
+  const [isHydrated, setIsHydrated] = useState(false);
+
   // Usando `use()` para resolver todas las promesas
   const categories = use(categoriesPromise);
   const allMealsByCategory = use(mealsByCategoryPromise);
   const singleMeal = use(singleMealPromise);
   const user = currentUser;
-  // const cartFromDB = use(cartFromDBPromise);
   const userReservations = use(userReservationsPromise);
+  const reviews = use(userReviewsPromise);
 
   const {
     setCategories,
     setSelectedCategory,
+    setSingleMeal,
     selectedCategory,
     setMealsByCategory,
-    setSingleMeal,
     setUser,
     // setCart,
   } = useLittleLemonStore();
 
-  const { setUserReservations, setIsHydrated } = useReservationStore();
+  const { setUserReservations } = useReservationStore();
+  const { setReviews } = useReviewStore();
 
   // Efecto para establecer los valores en el store
   useEffect(() => {
-    setCategories(categories);
-    setMealsByCategory(allMealsByCategory);
-    setSingleMeal(singleMeal);
-    setUser(user);
-    // setCart(cartFromDB);
-    setUserReservations(userReservations);
-    setIsHydrated(true);
+    if (isHydrated) {
+      return;
+    } else {
+      setCategories(categories);
+      setMealsByCategory(allMealsByCategory);
+      setSingleMeal(singleMeal);
+      setUser(user);
+      setUserReservations(userReservations);
+      setReviews(reviews);
+      setIsHydrated(true);
+    }
   }, [
     categories,
     setCategories,
@@ -66,11 +77,12 @@ export default function StoreHydration({
     setSingleMeal,
     user,
     setUser,
-    // cartFromDB,
-    // setCart,
     userReservations,
     setUserReservations,
+    setReviews,
+    reviews,
     setIsHydrated,
+    isHydrated,
   ]);
 
   // Efecto para recuperar el carrito del almacenamiento local

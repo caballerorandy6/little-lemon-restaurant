@@ -1,9 +1,9 @@
-import ReviewList from "@/components/authenticated/ReviewList";
+import CustomerReviews from "@/components/authenticated/CustomerReviews";
 
 const ReviewsPage = () => {
   return (
     <section id="reviews">
-      <ReviewList />
+      <CustomerReviews />
     </section>
   );
 };

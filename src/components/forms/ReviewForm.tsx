@@ -1,8 +1,8 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { reviewSchema, ReviewFormData } from "@/libs/zod";
+import { reviewSchema, ReviewFormData } from "@/libs/zod"; // Adjust the import path as needed
 import { toast } from "sonner";
 import { ErrorMessage } from "@hookform/error-message";
 import { useRouter } from "next/navigation";
@@ -10,11 +10,12 @@ import { useLittleLemonStore } from "@/store/little-lemon-store";
 import SmallSpinner from "@/components/spinners/SmallSpinner";
 import clsx from "clsx";
 import { useReviewStore } from "@/store/review-store";
+import StarRating from "@/components/public/StarRating";
+import { Review } from "@/libs/types";
 
 const ReviewForm = () => {
   const { user } = useLittleLemonStore();
-  const { setShowReviewForm } = useReviewStore();
-
+  const { setShowReviewForm, setReviews } = useReviewStore();
   const router = useRouter();
 
   const {
@@ -22,6 +23,7 @@ const ReviewForm = () => {
     handleSubmit,
     formState: { isValid, errors, isSubmitting },
     reset,
+    control,
   } = useForm<ReviewFormData>({
     resolver: zodResolver(reviewSchema),
     mode: "onChange",
@@ -48,11 +50,15 @@ const ReviewForm = () => {
       }
 
       const result = await response.json();
+      setReviews((prev): Review[] =>
+        [...prev, result].filter((r): r is Review => !!r)
+      );
+
       toast.success("Review submitted successfully!");
       reset();
       setShowReviewForm(false);
       router.refresh();
-      console.log("Review submitted:", result);
+      //console.log("Review submitted:", result);
     } catch (error) {
       console.error("Error submitting review:", error);
       toast.error("An error occurred while submitting your review.");
@@ -88,11 +94,12 @@ const ReviewForm = () => {
             Rate our restaurant
           </label>
           <div className="mt-2">
-            <input
-              type="number"
-              id="rating"
-              {...register("rating", { valueAsNumber: true })}
-              className="block w-full rounded-md bg-white px-3 py-1.5 text-base text-gray-900 border border-gray-300 placeholder:text-gray-400 sm:text-sm focus:outline-none focus:ring-1 focus:ring-gray-200 focus:border-gray-300"
+            <Controller
+              name="rating"
+              control={control}
+              render={({ field }) => (
+                <StarRating value={field.value} onChange={field.onChange} />
+              )}
             />
             <ErrorMessage
               errors={errors}

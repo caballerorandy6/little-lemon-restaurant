@@ -1,7 +1,12 @@
 import { cookies } from "next/headers";
 import jwt from "jsonwebtoken";
 import { prisma } from "@/libs/prisma";
-import type { CartItem, Ingredient, ReservationAPI } from "@/libs/types";
+import type {
+  CartItem,
+  Ingredient,
+  ReservationAPI,
+  Review,
+} from "@/libs/types";
 
 // Esta función obtiene el carrito del usuario desde el servidor
 export async function getCartServerSide(): Promise<CartItem[]> {
@@ -156,4 +161,53 @@ export async function updateExpiredReservations() {
   }
 
   return expiredIds;
+}
+
+export async function getReviewsServerSide(): Promise<Review[]> {
+  try {
+    const cookieStore = await cookies();
+    const token = cookieStore.get("token")?.value;
+    if (!token) return [];
+
+    const payload = jwt.verify(token, process.env.JWT_SECRET!) as {
+      id: number;
+    };
+
+    const reviews = await prisma.review.findMany({
+      where: { userId: payload.id },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            createdAt: true,
+            updatedAt: true,
+          },
+        },
+        meal: true,
+      },
+    });
+
+    return reviews.map((review) => ({
+      id: review.id,
+      userId: review.userId,
+      mealId: review.mealId,
+      rating: review.rating,
+      comment: review.comment,
+      createdAt: review.createdAt.toISOString(),
+      user: {
+        id: review.user.id,
+        name: review.user.name,
+        email: review.user.email,
+        role: review.user.role,
+        createdAt: review.user.createdAt.toISOString(),
+        updatedAt: review.user.updatedAt.toISOString(),
+      },
+    }));
+  } catch (err) {
+    console.error("getReviewsServerSide error", err);
+    return [];
+  }
 }

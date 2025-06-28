@@ -1,20 +1,26 @@
 "use client";
 
+import { useEffect } from "react";
 import CurrentUserClient from "@/components/public/CurrentUserClient";
 import { ChevronDownIcon } from "@heroicons/react/16/solid";
 import MealsCards from "@/components/authenticated/MealsCards";
 import ProfileInfo from "@/components/authenticated/ProfileInfo";
-import ReservationList from "@/components/authenticated/ReservationList";
-import ReviewsCards from "@/components/authenticated/ReviewsCards";
+import ReservationsCards from "@/components/authenticated/ReservationsCards";
+import ReviewList from "@/components/authenticated/ReviewList";
 import { useDashboardStore } from "@/store/dashboard-store";
 import { useLittleLemonStore } from "@/store/little-lemon-store";
 import { useReservationStore } from "@/store/reservation-store";
+import { useReviewStore } from "@/store/review-store";
 import CountUp from "react-countup";
 
 function DashboardPage() {
   const { activeTab, setActiveTab } = useDashboardStore();
   const { cart } = useLittleLemonStore();
   const { userReservations } = useReservationStore();
+  const { reviews } = useReviewStore();
+
+  //console.log("Reviews in DashboardPage:", reviews);
+  console.log("User Reservations in DashboardPage:", userReservations);
 
   function classNames(
     ...classes: (string | false | null | undefined)[]
@@ -38,20 +44,31 @@ function DashboardPage() {
     },
     {
       title: "Reservations",
-      value: <CountUp end={userReservations.length} duration={2} />, // Replace with actual reservations count
+      value: (
+        <CountUp
+          key={userReservations.length}
+          end={userReservations.length}
+          duration={2}
+        />
+      ),
     },
     {
       title: "Reviews",
-      value: <CountUp end={100} duration={2} />, // Replace with actual reviews count
+      value: <CountUp end={reviews.length} duration={2} />, // Replace with actual reviews count
     },
   ];
 
   const tabs = [
-    { name: "Profile Info", href: "#", current: false },
-    { name: "Reservations", href: "#", current: false },
-    { name: "My Cart", href: "#", current: false },
-    { name: "Reviews", href: "#", current: true },
+    { name: "Profile Info", href: "#" },
+    { name: "Reservations", href: "#" },
+    { name: "My Cart", href: "#" },
+    { name: "Reviews", href: "#" },
   ];
+
+  useEffect(() => {
+    // Siempre establecer "Profile Info" como tab activo al cargar
+    setActiveTab("Profile Info");
+  }, [setActiveTab]);
 
   return (
     <div className="max-w-5xl mx-auto p-6 space-y-6">
@@ -77,7 +94,8 @@ function DashboardPage() {
         <div className="grid grid-cols-1 sm:hidden">
           {/* Use an "onChange" listener to redirect the user to the selected tab URL. */}
           <select
-            defaultValue={tabs.find((tab) => tab.current)?.name}
+            value={activeTab}
+            onChange={(e) => handleTabChange(e.target.value)}
             className="col-start-1 row-start-1 w-full appearance-none rounded-md bg-white py-2 pr-8 pl-3 text-base text-gray-900 outline-1 -outline-offset-1 outline-gray-300 focus:outline-2 focus:-outline-offset-2 focus:outline-green-600"
           >
             {tabs.map((tab) => (
@@ -112,10 +130,10 @@ function DashboardPage() {
           </div>
         </div>
         <div className="mt-4">
-          {activeTab === "Reservations" && <ReservationList />}
+          {activeTab === "Reservations" && <ReservationsCards />}
           {activeTab === "My Cart" && <MealsCards />}
           {activeTab === "Profile Info" && <ProfileInfo />}
-          {activeTab === "Reviews" && <ReviewsCards />}
+          {activeTab === "Reviews" && <ReviewList />}
         </div>
       </div>
     </div>

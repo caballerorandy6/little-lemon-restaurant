@@ -1,26 +1,11 @@
 "use client";
-import { useEffect } from "react";
+
 import { useReservationStore } from "@/store/reservation-store";
-import { useAuth } from "@/libs/hooks/useAuth";
-import { getUserReservations } from "@/libs/utils";
 
 export default function ReservationsCards() {
-  const { userReservations, setUserReservations } = useReservationStore();
-  const { isAuthenticated } = useAuth();
+  const { userReservations } = useReservationStore();
 
-  useEffect(() => {
-    const fetchReservations = async () => {
-      if (isAuthenticated) {
-        try {
-          const reservationData = await getUserReservations();
-          setUserReservations(reservationData);
-        } catch (err) {
-          console.error("Cart fetch failed:", err);
-        }
-      }
-    };
-    fetchReservations();
-  }, [isAuthenticated, setUserReservations]);
+  console.log("User Reservations:", userReservations);
 
   return (
     <div className="border border-gray-200 bg-white/80 backdrop-blur p-8 rounded-lg shadow-md">

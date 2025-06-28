@@ -2,11 +2,7 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import { ReservationAPI } from "@/libs/types";
 import {} from "../libs/utils";
-import {
-  deleteReservationById,
-  updateReservationById,
-  isReservationExpired,
-} from "@/libs/utils";
+import { deleteReservationById, updateReservationById } from "@/libs/utils";
 
 interface ReservationStore {
   userReservations: ReservationAPI[];
@@ -32,22 +28,8 @@ export const useReservationStore = create<ReservationStore>()(
 
       userReservations: [],
 
-      setUserReservations: async (reservations) => {
-        const updatedReservations = await Promise.all(
-          reservations.map(async (res) => {
-            const isExpiredNow = isReservationExpired(res);
-            if (isExpiredNow && res.status === "ACTIVE") {
-              const updated = await updateReservationById({
-                ...res,
-                status: "EXPIRED",
-              });
-              return updated ?? { ...res, status: "EXPIRED" }; // fallback si falla
-            }
-            return res;
-          })
-        );
-
-        set({ userReservations: updatedReservations });
+      setUserReservations: (reservations) => {
+        set({ userReservations: reservations });
       },
 
       deleteReservationById: async (id) => {

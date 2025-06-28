@@ -10,6 +10,7 @@ import { useLittleLemonStore } from "@/store/little-lemon-store";
 import { ErrorMessage } from "@hookform/error-message";
 import Spinner from "@/components/spinners/Spinner";
 import { useRouter } from "next/navigation";
+import { hydrateUserStores } from "@/libs/hydrateUserStores";
 
 export default function LoginForm() {
   const router = useRouter();
@@ -49,6 +50,9 @@ export default function LoginForm() {
 
       setUser(result.user);
       setIsAuthenticated(true);
+
+      // Hidrate los stores de reservas y reseñas
+      await hydrateUserStores();
 
       toast.success("Login successful");
       reset();

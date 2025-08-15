@@ -25,7 +25,7 @@ const ReservationNavLink = () => {
     <button
       onClick={handleClick}
       disabled={isLoadingAuth}
-      className="relative py-2 text-sm font-medium text-gray-700 transition-all duration-300 hover:text-green-600 group disabled:opacity-50 disabled:cursor-wait"
+      className="relative py-2 text-sm font-medium text-emerald-900 transition-all duration-300 hover:text-green-600 group disabled:opacity-50 disabled:cursor-wait cursor-pointer hover:p-2"
     >
       <span className="relative z-10">Reservation</span>
       {/* Animated underline */}

@@ -22,7 +22,7 @@ const NavbarUnauth = () => {
 
   return (
     <header className="fixed inset-x-0 top-0 z-50 nav-blur">
-      <nav className="mx-auto flex items-center justify-between px-6 py-4 max-w-7xl">
+      <nav className="mx-auto flex items-center justify-between  px-6 py-4 max-w-7xl">
         {/* Logo with hover effect */}
         <Link
           href="/#home"
@@ -62,7 +62,7 @@ const NavbarUnauth = () => {
                 key={item.name}
                 href={item.href}
                 className={clsx(
-                  "relative py-2 text-sm font-medium text-gray-700 transition-all duration-300 hover:text-green-600 group",
+                  "relative py-2 text-sm font-medium text-emerald-900 transition-all duration-300 hover:text-green-600 group hover:p-2",
                   {
                     "text-green-600 font-semibold": activeSection === item.name,
                   }

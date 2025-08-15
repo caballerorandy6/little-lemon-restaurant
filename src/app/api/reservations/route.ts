@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/libs/prisma";
 import { getCurrentUser } from "@/libs/auth/getCurrentUser";
+import { formatDateToDDMMYYYY } from "@/libs/utils";
+import { updateExpiredReservations } from "@/libs/server";
+import { parse } from "date-fns";
 
 // Create a new reservation for the current user
 export async function POST(request: NextRequest) {
@@ -20,16 +23,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // The frontend sends the date as MM/dd/yyyy, so we parse it accordingly
+    const parsedDate = parse(date, "MM/dd/yyyy", new Date());
+
     const reservation = await prisma.reservation.create({
       data: {
         userId: user.id,
-        date: new Date(date),
-        time: time,
-        guests: guests,
+        date: parsedDate,
+        time,
+        guests,
       },
     });
 
-    return NextResponse.json(reservation, { status: 201 });
+    return NextResponse.json(
+      {
+        ...reservation,
+        date: formatDateToDDMMYYYY(reservation.date.toString()),
+      },
+      { status: 201 }
+    );
   } catch (error) {
     console.error("Error creating reservation:", error);
     return NextResponse.json(
@@ -42,21 +54,30 @@ export async function POST(request: NextRequest) {
 // Get all reservations for the current user
 export async function GET() {
   const user = await getCurrentUser();
+
+  if (!user) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
+    await updateExpiredReservations(user.id);
 
     const reservations = await prisma.reservation.findMany({
       where: { userId: user.id },
       orderBy: { date: "asc" },
     });
 
-    console.log("User reservations fetched:", reservations);
+    const formattedReservations = reservations.map((reservation) => ({
+      ...reservation,
+      date: formatDateToDDMMYYYY(reservation.date.toString()),
+    }));
 
-    return NextResponse.json({ reservations }, { status: 200 });
+    return NextResponse.json(
+      { reservations: formattedReservations },
+      { status: 200 }
+    );
   } catch (error) {
-    console.error("Error fetching reservations:", error);
+    console.error("Error fetching/updating reservations:", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }

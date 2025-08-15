@@ -52,22 +52,21 @@ export default function StoreHydration({
     // setCart,
   } = useLittleLemonStore();
 
-  const { setUserReservations } = useReservationStore();
+  const { setUserReservations, setIsHydrated: setIsReservationHydrated } =
+    useReservationStore();
   const { setReviews } = useReviewStore();
 
   // Efecto para establecer los valores en el store
   useEffect(() => {
-    if (isHydrated) {
-      return;
-    } else {
-      setCategories(categories);
-      setMealsByCategory(allMealsByCategory);
-      setSingleMeal(singleMeal);
-      setUser(user);
-      setUserReservations(userReservations);
-      setReviews(reviews);
-      setIsHydrated(true);
-    }
+    setCategories(categories);
+    setMealsByCategory(allMealsByCategory);
+    setSingleMeal(singleMeal);
+    setUser(user);
+    setUserReservations(userReservations);
+    setReviews(reviews);
+    setIsHydrated(true);
+    setIsReservationHydrated(true);
+    setUserReservations(userReservations);
   }, [
     categories,
     setCategories,
@@ -83,6 +82,7 @@ export default function StoreHydration({
     reviews,
     setIsHydrated,
     isHydrated,
+    setIsReservationHydrated,
   ]);
 
   // Efecto para recuperar el carrito del almacenamiento local

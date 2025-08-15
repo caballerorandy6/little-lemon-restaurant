@@ -7,6 +7,8 @@ import type {
   ReservationAPI,
   Review,
 } from "@/libs/types";
+import { revalidatePath } from "next/cache";
+import { formatDateToMMDDYYYY } from "@/libs/utils";
 
 // Esta función obtiene el carrito del usuario desde el servidor
 export async function getCartServerSide(): Promise<CartItem[]> {
@@ -114,16 +116,18 @@ export async function getUserReservationsServerSide(): Promise<
         reservations: true,
       },
     });
-    return (
+
+    const formattedReservations =
       user?.reservations.map((reservation) => ({
         id: reservation.id,
-        date: reservation.date.toISOString().split("T")[0],
+        date: formatDateToMMDDYYYY(reservation.date),
         time: reservation.time,
         guests: reservation.guests,
         userId: reservation.userId,
         status: reservation.status,
-      })) || []
-    );
+      })) || [];
+
+    return formattedReservations;
   } catch (error) {
     console.error("getUserReservations error:", error);
     return [];
@@ -131,38 +135,36 @@ export async function getUserReservationsServerSide(): Promise<
 }
 
 // Esta función actualiza las reservaciones expiradas a "EXPIRED"
-export async function updateExpiredReservations() {
+export async function updateExpiredReservations(userId: number) {
   const now = new Date();
 
-  const expiredReservations = await prisma.reservation.findMany({
-    where: {
-      status: "ACTIVE",
-    },
+  const activeReservations = await prisma.reservation.findMany({
+    where: { userId, status: "ACTIVE" },
   });
 
-  const expiredIds = expiredReservations
+  const expiredIds = activeReservations
     .filter((res) => {
-      const fullDateTime = new Date(
-        `${res.date.toISOString().split("T")[0]}T${res.time}`
-      );
+      const [hours, minutes] = res.time.split(":").map(Number);
+      const fullDateTime = new Date(res.date);
+      fullDateTime.setHours(hours);
+      fullDateTime.setMinutes(minutes);
+      fullDateTime.setSeconds(0);
+
       return fullDateTime < now;
     })
     .map((res) => res.id);
 
   if (expiredIds.length > 0) {
     await prisma.reservation.updateMany({
-      where: {
-        id: { in: expiredIds },
-      },
-      data: {
-        status: "EXPIRED",
-      },
+      where: { id: { in: expiredIds } },
+      data: { status: "EXPIRED" },
     });
-  }
 
-  return expiredIds;
+    revalidatePath("/reservations");
+  }
 }
 
+// Esta función obtiene las reseñas del usuario desde el servidor
 export async function getReviewsServerSide(): Promise<Review[]> {
   try {
     const cookieStore = await cookies();

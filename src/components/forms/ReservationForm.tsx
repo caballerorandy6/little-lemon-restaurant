@@ -6,11 +6,14 @@ import useSectionObserver from "@/libs/hooks/useSectionObserver";
 import { reservationSchema, ReservationFormData } from "@/libs/zod";
 import { toast } from "sonner";
 import { ErrorMessage } from "@hookform/error-message";
-import { useRouter } from "next/navigation";
+import { useReservationStore } from "@/store/reservation-store";
+// import { useRouter } from "next/navigation";
+// import { createReservation } from "@/actions/reservations";
+import { formatDateToMMDDYYYY } from "@/libs/utils";
 
 const ReservationForm = () => {
+  const { setUserReservations } = useReservationStore();
   const ref = useSectionObserver({ sectionName: "Reservation" });
-  const router = useRouter();
 
   const {
     register,
@@ -22,26 +25,69 @@ const ReservationForm = () => {
     mode: "onChange",
   });
 
+  // const onSubmit = async (data: ReservationFormData) => {
+  //   try {
+  //     const response = await fetch("/api/reservations", {
+  //       method: "POST",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //       body: JSON.stringify(data),
+  //     });
+
+  //     if (!response.ok) {
+  //       toast.error("Failed to create reservation. Please try again.");
+  //       return;
+  //     }
+
+  //     const result = await response.json();
+
+  //     const fixedResult = {
+  //       ...result,
+  //       date: result.date.split("/").reverse().join("-"),
+  //     };
+
+  //     addUserReservation(fixedResult);
+  //     //router.push("/reservations");
+
+  //     toast.success("Reservation created successfully!");
+  //     reset();
+
+  //     console.log("Reservation created:", result);
+  //   } catch (error) {
+  //     console.error("Error creating reservation:", error);
+  //     toast.error("An error occurred while creating the reservation.");
+  //   }
+  // };
+
   const onSubmit = async (data: ReservationFormData) => {
     try {
+      const formattedDate = formatDateToMMDDYYYY(data.date);
+
       const response = await fetch("/api/reservations", {
         method: "POST",
+        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, date: formattedDate }),
       });
 
       if (!response.ok) {
-        toast.error("Failed to create reservation. Please try again.");
+        toast.error("Failed to create reservation. Please try again!");
         return;
       }
 
-      const result = await response.json();
-      toast.success("Reservation created successfully!");
+      //Updating Zustand store
+      const newReservation = await response.json();
+
+      setUserReservations((prevReservations) => [
+        ...prevReservations,
+        newReservation,
+      ]);
+
       reset();
-      router.refresh();
-      console.log("Reservation created:", result);
+      toast.success("Reservation created successfully!");
     } catch (error) {
       console.error("Error creating reservation:", error);
       toast.error("An error occurred while creating the reservation.");

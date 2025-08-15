@@ -97,7 +97,7 @@ export default function Cart() {
                           </h3>
                         </div>
                         <p className="mt-1 text-sm font-medium text-gray-900">
-                          {product?.item?.price}
+                          ${product?.item?.price}
                         </p>
                       </div>
 

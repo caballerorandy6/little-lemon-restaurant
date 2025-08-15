@@ -60,9 +60,9 @@ export default function ReservationsCards() {
               {userReservations.map((reservation) => (
                 <tr key={reservation.id}>
                   <td className="relative py-4 pr-3 text-sm font-medium text-gray-900">
-                    {new Date(
-                      `${reservation.date}T12:00:00`
-                    ).toLocaleDateString("en-US")}
+                    {new Date(`${reservation.date}`).toLocaleDateString(
+                      "en-US"
+                    )}
                     <div className="absolute right-full bottom-0 h-px w-screen bg-gray-100" />
                     <div className="absolute bottom-0 left-0 h-px w-screen bg-gray-100" />
                   </td>

@@ -2,29 +2,36 @@
 
 import { useReservationStore } from "@/store/reservation-store";
 import { useLittleLemonStore } from "@/store/little-lemon-store";
-import { formatTimeTo12Hour, isReservationExpired } from "@/libs/utils";
-import ReservationListSkeleton from "../skeletons/ReservationListSkeleton";
+import {
+  formatDateToMMDDYYYY,
+  formatTimeTo12Hour,
+  isReservationExpired,
+  sortedReservations,
+} from "@/libs/utils";
 import { ReservationAPI } from "@/libs/types";
 import clsx from "clsx";
 import { toast } from "sonner";
-import { sortedReservations } from "@/libs/utils";
-import SmallSpinner from "@/components/spinners/SmallSpinner";
+import { useEffect } from "react";
 
 export default function ReservationList() {
   const {
     userReservations,
-    //deleteReservationById,
     updateReservation,
     editingId,
     setEditingId,
     editReservationValues,
     setEditReservationValues,
-    isHydrated,
+    hasNewReservation,
+    setHasNewReservation,
   } = useReservationStore();
 
   const { user } = useLittleLemonStore();
 
-  console.log("User Reservations:", userReservations);
+  useEffect(() => {
+    if (hasNewReservation) {
+      setHasNewReservation(false);
+    }
+  }, [userReservations, hasNewReservation, setHasNewReservation]);
 
   return (
     <section className="bg-white/80 backdrop-blur p-8 rounded-lg shadow-md max-w-4xl mx-auto mt-10 mb-20">
@@ -35,14 +42,6 @@ export default function ReservationList() {
           </h1>
           <p className="mt-2 text-sm text-gray-700">Reservation History</p>
         </div>
-        {/* <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-          <button
-            type="button"
-            className="block rounded-md bg-indigo-600 px-3 py-2 text-center text-sm font-semibold text-white shadow-xs hover:bg-indigo-500 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 cursor-pointer"
-          >
-            Export PDF
-          </button>
-        </div> */}
       </div>
 
       <div className="mt-8 flow-root">
@@ -63,25 +62,28 @@ export default function ReservationList() {
                   <th className="px-2 py-3.5 text-left text-sm font-semibold text-gray-900">
                     Status
                   </th>
+                  <th />
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200 bg-white">
-                {!isHydrated ? (
-                  <ReservationListSkeleton />
+                {userReservations.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="text-center py-4 text-gray-500">
+                      No reservations found.
+                    </td>
+                  </tr>
                 ) : (
                   sortedReservations(userReservations).map(
                     (reservation: ReservationAPI) => (
                       <tr key={reservation.id}>
                         <td className="py-2 pr-3 pl-4 text-sm text-gray-500 sm:pl-0">
-                          {editingId === reservation.id ? (
+                          {editingId === reservation?.id ? (
                             <input
                               type="date"
                               value={
                                 editReservationValues?.date?.slice(0, 10) || ""
                               }
-                              onChange={(
-                                e: React.ChangeEvent<HTMLInputElement>
-                              ) =>
+                              onChange={(e) =>
                                 setEditReservationValues({
                                   ...editReservationValues!,
                                   date: e.target.value,
@@ -90,19 +92,15 @@ export default function ReservationList() {
                               className="border rounded px-2 py-1"
                             />
                           ) : (
-                            new Date(
-                              `${reservation.date}T12:00:00`
-                            ).toLocaleDateString("en-US")
+                            formatDateToMMDDYYYY(reservation?.date)
                           )}
                         </td>
                         <td className="px-2 py-2 text-sm text-gray-900">
-                          {editingId === reservation.id ? (
+                          {editingId === reservation?.id ? (
                             <input
                               type="time"
                               value={editReservationValues?.time || ""}
-                              onChange={(
-                                e: React.ChangeEvent<HTMLInputElement>
-                              ) =>
+                              onChange={(e) =>
                                 setEditReservationValues({
                                   ...editReservationValues!,
                                   time: e.target.value,
@@ -111,18 +109,16 @@ export default function ReservationList() {
                               className="border rounded px-2 py-1"
                             />
                           ) : (
-                            formatTimeTo12Hour(reservation.time)
+                            formatTimeTo12Hour(reservation?.time)
                           )}
                         </td>
                         <td className="px-2 py-2 text-sm">
-                          {editingId === reservation.id ? (
+                          {editingId === reservation?.id ? (
                             <input
                               type="number"
                               min="1"
                               value={editReservationValues?.guests || 1}
-                              onChange={(
-                                e: React.ChangeEvent<HTMLInputElement>
-                              ) =>
+                              onChange={(e) =>
                                 setEditReservationValues({
                                   ...editReservationValues!,
                                   guests: +e.target.value,
@@ -131,14 +127,13 @@ export default function ReservationList() {
                               className="border rounded px-2 py-1 w-16"
                             />
                           ) : (
-                            reservation.guests
+                            reservation?.guests
                           )}
                         </td>
                         <td className="px-2 py-2 text-sm">
-                          {editingId === reservation.id ? (
+                          {editingId === reservation?.id ? (
                             <select
                               value={editReservationValues?.status || "ACTIVE"}
-                              disabled={!isHydrated}
                               onChange={(e) =>
                                 setEditReservationValues({
                                   ...editReservationValues!,
@@ -158,15 +153,12 @@ export default function ReservationList() {
                                   "border-red-500 bg-red-100 text-red-700":
                                     editReservationValues?.status ===
                                     "CANCELLED",
-                                  "opacity-50 cursor-not-allowed": !isHydrated,
                                 }
                               )}
                             >
                               <option value="ACTIVE">Active</option>
                               <option value="CANCELLED">Cancel</option>
                             </select>
-                          ) : !isHydrated ? (
-                            <SmallSpinner />
                           ) : reservation.status === "ACTIVE" ? (
                             <span className="text-green-700 font-semibold bg-green-200 rounded-md px-2 py-1">
                               ACTIVE
@@ -184,7 +176,6 @@ export default function ReservationList() {
                           )}
                         </td>
 
-                        {/* Action buttons */}
                         <td className="relative flex justify-end gap-4 py-2 pr-4 pl-3 text-sm sm:pr-0">
                           {editingId === reservation.id ? (
                             <>
@@ -202,7 +193,6 @@ export default function ReservationList() {
                                       ...editReservationValues,
                                     };
 
-                                    //  Validate if the reservation is expired
                                     if (
                                       updatedReservation.status === "EXPIRED" &&
                                       !isReservationExpired(updatedReservation)
@@ -233,42 +223,34 @@ export default function ReservationList() {
                               </button>
                             </>
                           ) : (
-                            <>
-                              <button
-                                disabled={
-                                  reservation.status === "EXPIRED" ||
-                                  reservation.status === "CANCELLED"
-                                }
-                                onClick={() => {
-                                  if (typeof reservation.userId === "number") {
-                                    setEditReservationValues({
-                                      ...reservation,
-                                    });
-                                    setEditingId(reservation.id ?? null);
-                                  }
-                                }}
-                                className={clsx(
-                                  "bg-gray-100 hover:bg-gray-200 text-gray-700 p-2 rounded-md cursor-pointer transition-colors",
-                                  {
-                                    "opacity-50 pointer-events-none cursor-not-allowed":
-                                      reservation.status === "EXPIRED" ||
-                                      reservation.status === "CANCELLED",
-                                  }
-                                )}
-                              >
-                                Edit
-                              </button>
-                              {/* <button
+                            <button
+                              disabled={
+                                reservation.status === "EXPIRED" ||
+                                reservation.status === "CANCELLED"
+                              }
                               onClick={() => {
-                                if (reservation.id !== undefined) {
-                                  deleteReservationById(reservation.id);
-                                }
+                                setEditReservationValues({
+                                  ...reservation,
+                                  date:
+                                    typeof reservation.date === "string"
+                                      ? reservation.date
+                                      : new Date(reservation.date)
+                                          .toISOString()
+                                          .split("T")[0],
+                                });
+                                setEditingId(reservation.id ?? null);
                               }}
-                              className="text-red-500 hover:text-red-400 bg-gray-100 hover:bg-red-100 p-2 rounded-md cursor-pointer transition-colors"
+                              className={clsx(
+                                "bg-gray-100 hover:bg-gray-200 text-gray-700 p-2 rounded-md cursor-pointer transition-colors",
+                                {
+                                  "opacity-50 pointer-events-none cursor-not-allowed":
+                                    reservation.status === "EXPIRED" ||
+                                    reservation.status === "CANCELLED",
+                                }
+                              )}
                             >
-                              Delete
-                            </button> */}
-                            </>
+                              Edit
+                            </button>
                           )}
                         </td>
                       </tr>

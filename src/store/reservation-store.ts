@@ -6,7 +6,11 @@ import { deleteReservationById, updateReservationById } from "@/libs/utils";
 
 interface ReservationStore {
   userReservations: ReservationAPI[];
-  setUserReservations: (reservations: ReservationAPI[]) => void;
+  setUserReservations: (
+    reservations:
+      | ReservationAPI[]
+      | ((prev: ReservationAPI[]) => ReservationAPI[])
+  ) => void;
   deleteReservationById: (reservationId: number) => Promise<void>;
   updateReservation: (data: ReservationAPI) => Promise<void>;
   editingId: number | null;
@@ -17,19 +21,25 @@ interface ReservationStore {
   setIsLoading: (loading: boolean) => void;
   isHydrated: boolean;
   setIsHydrated: (hydrated: boolean) => void;
+  addUserReservation: (reservation: ReservationAPI) => void;
+  hasNewReservation: boolean;
+  setHasNewReservation: (value: boolean) => void;
 }
 
 export const useReservationStore = create<ReservationStore>()(
   persist(
     (set) => ({
       isLoading: false,
-
       setIsLoading: (loading) => set({ isLoading: loading }),
 
       userReservations: [],
-
       setUserReservations: (reservations) => {
-        set({ userReservations: reservations });
+        set((state) => ({
+          userReservations:
+            typeof reservations === "function"
+              ? reservations(state.userReservations)
+              : reservations,
+        }));
       },
 
       deleteReservationById: async (id) => {
@@ -51,16 +61,22 @@ export const useReservationStore = create<ReservationStore>()(
         set({ isLoading: true });
         try {
           const updated = await updateReservationById(data);
-          if (!updated) throw new Error("Failed to update reservation");
+
+          const updatedReservation: ReservationAPI = {
+            ...updated,
+            date:
+              typeof updated.date === "string"
+                ? updated.date
+                : new Date(updated.date).toISOString().split("T")[0],
+          };
+
           set((state) => ({
             userReservations: state.userReservations.map((r) =>
-              r.id === updated.id ? updated : r
+              r.id === updatedReservation.id ? updatedReservation : r
             ),
             editingId: null,
             editReservationValues: null,
           }));
-
-          console.log("Reservation updated successfully:", updated);
         } catch (e) {
           console.error("Error updating reservation:", e);
         } finally {
@@ -69,28 +85,42 @@ export const useReservationStore = create<ReservationStore>()(
       },
 
       editingId: null,
-
       setEditingId: (id: number | null) => set({ editingId: id }),
 
-      editReservationValues: {
-        date: "",
-        time: "",
-        guests: 0,
-        id: 0,
-        userId: 0,
-        status: "ACTIVE",
-      },
-
+      editReservationValues: null,
       setEditReservationValues: (values) =>
         set({ editReservationValues: values }),
 
       isHydrated: false,
-
       setIsHydrated: (value) => set({ isHydrated: value }),
+
+      addUserReservation: (reservation) => {
+        const fixedDate =
+          typeof reservation.date === "string"
+            ? reservation.date.split("T")[0]
+            : new Date(reservation.date).toISOString().split("T")[0];
+
+        const newReservation = {
+          ...reservation,
+          date: fixedDate,
+        };
+
+        set((state) => ({
+          userReservations: [...state.userReservations, newReservation],
+          isHydrated: true, // Ensure UI re-renders
+        }));
+      },
+
+      hasNewReservation: false,
+      setHasNewReservation: (value) => set({ hasNewReservation: value }),
     }),
+
     {
       name: "reservation-storage",
       storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
+        userReservations: state.userReservations,
+      }),
     }
   )
 );

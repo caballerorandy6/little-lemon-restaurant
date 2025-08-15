@@ -9,7 +9,7 @@ const GreenButton = ({ href, children }: GreenButtonProps) => {
   return (
     <Link
       href={href}
-      className="rounded-md bg-green-800 px-3.5 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-green-700 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-green-600 transition-colors"
+      className="group relative inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-green-700 to-green-600 px-8 py-4 text-base font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 hover:from-green-600 hover:to-green-500 btn-shine cursor-pointer"
     >
       {children}
     </Link>

@@ -7,7 +7,7 @@ interface DecodedToken {
   exp: number;
 }
 
-export const useAuth = () => {
+export const useAuth = (options = { redirectOnExpired: true }) => {
   const {
     isLoadingAuth,
     setIsLoadingAuth,
@@ -24,7 +24,7 @@ export const useAuth = () => {
 
       const token = localStorage.getItem("token");
 
-      // if no token, clear everything and redirect to login
+      // if no token, clear everything
       if (!token) {
         setUser(null);
         setIsAuthenticated(false);
@@ -40,25 +40,42 @@ export const useAuth = () => {
         if (exp < now) {
           // if token is expired
           localStorage.removeItem("token");
+          sessionStorage.removeItem("cart");
           setUser(null);
           setIsAuthenticated(false);
-          router.push("/login");
+
+          // Only redirect if the option is enabled (for protected routes)
+          if (options.redirectOnExpired) {
+            router.push("/login");
+          }
         } else {
           setIsAuthenticated(true);
         }
       } catch (error) {
         console.error("Error decoding token:", error);
         localStorage.removeItem("token");
+        sessionStorage.removeItem("cart");
         setUser(null);
         setIsAuthenticated(false);
-        router.push("/login");
+
+        // Only redirect if the option is enabled
+        if (options.redirectOnExpired) {
+          router.push("/login");
+        }
       } finally {
         setIsLoadingAuth(false);
       }
     };
 
     authenticate();
-  }, [setIsAuthenticated, setIsLoadingAuth, router, setUser]);
+  }, [
+    setIsAuthenticated,
+    setIsLoadingAuth,
+    router,
+    setUser,
+    options.redirectOnExpired,
+  ]);
+
   return {
     isAuthenticated,
     isLoadingAuth,

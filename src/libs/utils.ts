@@ -2,23 +2,54 @@ import { Meal, Ingredient } from "@/libs/types";
 import { useLittleLemonStore } from "@/store/little-lemon-store";
 import { CartItem, CategoryAPI, MealAPI, ReservationAPI } from "@/libs/types";
 
+// Function to get the base URL for API requests
+const getBaseUrl = () => {
+  if (process.env.NEXT_PUBLIC_BASE_URL) {
+    return process.env.NEXT_PUBLIC_BASE_URL;
+  }
+  if (process.env.VERCEL_URL) {
+    return `https://${process.env.VERCEL_URL}`;
+  }
+  return "http://localhost:3000"; // fallback local dev
+};
+
+// Function to format date from MM/DD/YYYY to YYYY-MM-DD
+export function formatDateToMMDDYYYY(date: string | Date): string {
+  const d = new Date(date);
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const dd = String(d.getDate()).padStart(2, "0");
+  const yyyy = d.getFullYear();
+  return `${mm}/${dd}/${yyyy}`;
+}
+
 // Function to sort reservations by date and time in descending order
 export const sortedReservations = (reservations: ReservationAPI[]) =>
-  reservations.sort((a: ReservationAPI, b: ReservationAPI) => {
-    const aDateTime = new Date(`${a.date}T${a.time}`);
-    const bDateTime = new Date(`${b.date}T${b.time}`);
-    return bDateTime.getTime() - aDateTime.getTime();
-  });
+  reservations
+    .filter(
+      (res): res is ReservationAPI =>
+        !!res &&
+        typeof res.date === "string" &&
+        typeof res.time === "string" &&
+        !isNaN(new Date(`${res.date}T${res.time}`).getTime())
+    )
+    .sort((a, b) => {
+      const aDateTime = new Date(`${a.date}T${a.time}`);
+      const bDateTime = new Date(`${b.date}T${b.time}`);
+      return bDateTime.getTime() - aDateTime.getTime();
+    });
 
 // Function to check if a reservation is expired
 export function isReservationExpired(reservation: ReservationAPI): boolean {
   if (reservation.status !== "ACTIVE") return false;
 
-  const reservationDateTime = new Date(
-    `${reservation.date}T${reservation.time}`
-  );
+  const [hours, minutes] = reservation.time.split(":").map(Number);
+  const fullDate = new Date(reservation.date);
+  fullDate.setHours(hours);
+  fullDate.setMinutes(minutes);
+  fullDate.setSeconds(0);
+  fullDate.setMilliseconds(0);
 
-  return reservationDateTime < new Date();
+  return fullDate < new Date();
 }
 
 // Function to check if a reservation is active or expired
@@ -40,7 +71,11 @@ export async function autoExpireReservations(reservations: ReservationAPI[]) {
 }
 
 // Function to format time from 24-hour to 12-hour format
-export function formatTimeTo12Hour(time24: string): string {
+export function formatTimeTo12Hour(time24: string | undefined): string {
+  if (!time24 || typeof time24 !== "string" || !time24.includes(":")) {
+    return "Invalid time";
+  }
+
   const [hourStr, minute] = time24.split(":");
   const hour = parseInt(hourStr, 10);
   const period = hour >= 12 ? "PM" : "AM";
@@ -81,6 +116,7 @@ export const subTotal = () => {
 };
 
 export const taxCalculation = () => (Number(subTotal()) * 0.075).toFixed(2);
+
 export const shippingCalculation = () => (Number(subTotal()) * 0.05).toFixed(2);
 
 export const totalCalculation = () =>
@@ -200,30 +236,25 @@ export async function getSingleMeal(
 //Get All Single User Reservation
 export async function getUserReservations(): Promise<ReservationAPI[]> {
   try {
-    console.log(
-      "Fetching from:",
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/reservations`
-    );
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/api/reservations`,
-      {
-        next: { revalidate: 60 },
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        credentials: "include", // Include cookies for authentication
-      }
-    );
+    const baseUrl = getBaseUrl();
+    const response = await fetch(`${baseUrl}/api/reservations`, {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      cache: "no-store",
+    });
+
     if (!response.ok) {
-      throw new Error("Failed to fetch reservations");
+      console.error("Failed to fetch user reservations");
+      return [];
     }
 
     const data = await response.json();
-    console.log("User reservations fetched:", data.reservations);
     return Array.isArray(data.reservations) ? data.reservations : [];
   } catch (error) {
-    console.error("Error fetching user reservations:", error);
+    console.error("Error in getUserReservations:", error);
     return [];
   }
 }

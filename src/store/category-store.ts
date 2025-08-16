@@ -6,7 +6,7 @@ interface CategoryStore {
   categories: CategoryAPI[];
   selectedCategory: CategoryAPI | null;
   setCategories: (categories: CategoryAPI[]) => void;
-  setSelectedCategory: (category: CategoryAPI) => void;
+  setSelectedCategory: (category: CategoryAPI | null) => void;
   getCategoryById: (id: string) => CategoryAPI | undefined;
   openCategoryListDialog: boolean;
   setOpenCategoryListDialog: (open: boolean) => void;

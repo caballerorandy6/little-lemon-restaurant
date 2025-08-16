@@ -3,17 +3,17 @@
 import Link from "next/link";
 import Image from "next/image";
 import CategoryModal from "@/components/public/CategoryModal";
-import { useLittleLemonStore } from "@/store/little-lemon-store";
 import useSectionObserver from "@/libs/hooks/useSectionObserver";
+import { useCategoryStore } from "@/store/category-store";
 
 const PublicMenu = () => {
   const {
-    categories,
-    selectedCategory,
     setSelectedCategory,
-    landingCategoryDialog,
-    setLandingCategoryDialog,
-  } = useLittleLemonStore();
+    selectedCategory,
+    categories,
+    openCategoryListDialog,
+    setOpenCategoryListDialog,
+  } = useCategoryStore();
 
   const limitedCategories = categories.slice(0, 4);
   const ref = useSectionObserver({ sectionName: "Menu" });
@@ -98,7 +98,7 @@ const PublicMenu = () => {
                 <button
                   onClick={() => {
                     setSelectedCategory(category);
-                    setLandingCategoryDialog(true);
+                    setOpenCategoryListDialog(true);
                   }}
                   className="group relative inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-green-700 to-green-600 px-8 py-4 text-base font-semibold text-white shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105 hover:from-green-600 hover:to-green-500 btn-shine cursor-pointer"
                 >
@@ -126,11 +126,11 @@ const PublicMenu = () => {
           </li>
         ))}
 
-        {landingCategoryDialog && selectedCategory && (
+        {openCategoryListDialog && selectedCategory && (
           <CategoryModal
             category={selectedCategory}
             onClose={() => {
-              setLandingCategoryDialog(false);
+              setOpenCategoryListDialog(false);
               setSelectedCategory(null);
             }}
           />

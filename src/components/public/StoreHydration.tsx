@@ -1,10 +1,10 @@
 "use client";
 
-import { use } from "react";
-import { useEffect, useState } from "react";
+import { use, useEffect, useRef } from "react";
 import { useLittleLemonStore } from "@/store/little-lemon-store";
 import { useReservationStore } from "@/store/reservation-store";
 import { useReviewStore } from "@/store/review-store";
+import { useCategoryStore } from "@/store/category-store";
 import type {
   CategoryAPI,
   MealAPI,
@@ -18,7 +18,6 @@ type Props = {
   mealsByCategoryPromise: Promise<MealAPI[]>;
   singleMealPromise: Promise<MealAPI | null>;
   currentUser: SafeUser | null;
-  // cartFromDBPromise: Promise<CartItem[]>;
   userReservationsPromise: Promise<ReservationAPI[]>;
   userReviewsPromise: Promise<Review[]>;
 };
@@ -28,82 +27,45 @@ export default function StoreHydration({
   mealsByCategoryPromise,
   singleMealPromise,
   currentUser,
-  // cartFromDBPromise,
   userReservationsPromise,
   userReviewsPromise,
 }: Props) {
-  const [isHydrated, setIsHydrated] = useState(false);
-
-  // Usando `use()` para resolver todas las promesas
+  // Usar `use()` para resolver las promesas - esto suspenderá el componente
   const categories = use(categoriesPromise);
   const allMealsByCategory = use(mealsByCategoryPromise);
   const singleMeal = use(singleMealPromise);
-  const user = currentUser;
   const userReservations = use(userReservationsPromise);
   const reviews = use(userReviewsPromise);
 
-  const {
-    setCategories,
-    setSelectedCategory,
-    setSingleMeal,
-    selectedCategory,
-    setMealsByCategory,
-    setUser,
-    // setCart,
-  } = useLittleLemonStore();
-
-  const { setUserReservations, setIsHydrated: setIsReservationHydrated } =
-    useReservationStore();
+  // Obtener funciones del store
+  const { setSingleMeal, selectedCategory, setUser } = useLittleLemonStore();
+  const { setMealsByCategory, setCategories, setSelectedCategory } =
+    useCategoryStore();
+  const { setUserReservations } = useReservationStore();
   const { setReviews } = useReviewStore();
 
-  // Efecto para establecer los valores en el store
-  useEffect(() => {
-    setCategories(categories);
-    setMealsByCategory(allMealsByCategory);
-    setSingleMeal(singleMeal);
-    setUser(user);
-    setUserReservations(userReservations);
-    setReviews(reviews);
-    setIsHydrated(true);
-    setIsReservationHydrated(true);
-    setUserReservations(userReservations);
-  }, [
-    categories,
-    setCategories,
-    allMealsByCategory,
-    setMealsByCategory,
-    singleMeal,
-    setSingleMeal,
-    user,
-    setUser,
-    userReservations,
-    setUserReservations,
-    setReviews,
-    reviews,
-    setIsHydrated,
-    isHydrated,
-    setIsReservationHydrated,
-  ]);
+  // Usar useRef para evitar múltiples ejecuciones
+  const hasHydrated = useRef(false);
 
-  // Efecto para recuperar el carrito del almacenamiento local
-  // useEffect(() => {
-  //   const cart = getCart();
-  //   if (cart) setCart(cart);
-  // }, [setCart]);
-
-  // Efecto para establecer la categoría seleccionada si no está definida
+  // Un solo useEffect para hidratar todo
   useEffect(() => {
-    if (categories.length > 0 && !selectedCategory) {
-      setSelectedCategory(categories[0]);
+    if (!hasHydrated.current) {
+      // Hidratar stores - SOLO una vez al montar
+      setCategories(categories);
+      setMealsByCategory(allMealsByCategory);
+      setSingleMeal(singleMeal);
+      setUser(currentUser);
+      setUserReservations(userReservations);
+      setReviews(reviews);
+
+      if (categories.length > 0 && !selectedCategory) {
+        setSelectedCategory(categories[0]);
+      }
+
+      hasHydrated.current = true;
     }
-  }, [categories, selectedCategory, setSelectedCategory]);
-
-  // Efecto para establecer el carrito desde la base de datos si está disponible
-  // useEffect(() => {
-  //   if (Array.isArray(cartFromDB) && cartFromDB.length > 0) {
-  //     setCart(cartFromDB);
-  //   }
-  // }, [cartFromDB, setCart]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Intencionalmente vacío - solo ejecutar al montar
 
   return null;
 }

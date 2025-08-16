@@ -51,8 +51,6 @@ interface LittleLemonStore {
   setCategories: (categories: CategoryAPI[]) => void;
   singleMeal: MealAPI | null;
   setSingleMeal: (meal: MealAPI | null) => void;
-  mealsByCategory: MealAPI[];
-  setMealsByCategory: (meals: MealAPI[]) => void;
 }
 
 export const useLittleLemonStore = create<LittleLemonStore>()(
@@ -60,8 +58,6 @@ export const useLittleLemonStore = create<LittleLemonStore>()(
     (set) => ({
       singleMeal: null,
       setSingleMeal: (meal) => set({ singleMeal: meal }),
-      mealsByCategory: [],
-      setMealsByCategory: (meals) => set({ mealsByCategory: meals }),
       avatarMenuOpen: false,
       setAvatarMenuOpen: (open) => set({ avatarMenuOpen: open }),
       landingCategoryDialog: false,

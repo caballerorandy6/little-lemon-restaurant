@@ -4,13 +4,14 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import Navbar from "@/components/public/Navbar";
 import StoreHydration from "@/components/public/StoreHydration";
-import { getCategories, getMealsByCategory, getSingleMeal } from "@/libs/utils";
+import { getMealsByCategory, getSingleMeal } from "@/libs/utils";
 import { getCurrentUser } from "@/libs/auth/getCurrentUser";
 import {
   getUserReservationsServerSide,
   getReviewsServerSide,
 } from "@/libs/server";
 //import { getCartServerSide } from "@/libs/server";
+import { getCategoriesAction } from "@/actions/getCategoriesAction";
 
 const robotoSlab = Roboto_Slab({
   subsets: ["latin"],
@@ -35,7 +36,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   //
-  const categoriesPromise = getCategories();
+  const categoriesPromise = getCategoriesAction();
   const mealsByCategoryPromise = categoriesPromise.then((categories) =>
     Promise.all(
       categories.map((category) => getMealsByCategory(category.strCategory))
@@ -58,6 +59,7 @@ export default async function RootLayout({
         className={`${robotoSlab.variable} ${inter.variable} antialiased text-pretty font-body`}
       >
         <Navbar />
+
         <StoreHydration
           categoriesPromise={categoriesPromise}
           mealsByCategoryPromise={mealsByCategoryPromise}
@@ -67,6 +69,7 @@ export default async function RootLayout({
           userReservationsPromise={userReservationsPromise}
           userReviewsPromise={userReviewsPromise}
         />
+
         {children}
         <Toaster position="bottom-right" richColors closeButton={true} />
       </body>

@@ -26,15 +26,59 @@ li {
 .nav-blur {
   animation: blur linear both;
   animation-timeline: scroll();
-  animation-range: 0 1000px;
+  animation-range: 0 300px;
+  transition: all 0.3s ease-out;
 }
 
 @keyframes blur {
   to {
-    box-shadow: 0 4px 25px rgba(0, 128, 64, 0.35); /* verde más oscuro y suave */
-    background: rgba(0, 128, 64, 0.25); /* verde con menos saturación */
-    backdrop-filter: blur(30px) saturate(150%);
-    -webkit-backdrop-filter: blur(30px) saturate(150%);
+    box-shadow:
+      0 4px 30px rgba(0, 0, 0, 0.1),
+      0 2px 20px rgba(21, 128, 61, 0.15);
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(20px) saturate(150%);
+    -webkit-backdrop-filter: blur(20px) saturate(150%);
+  }
+}
+
+nav-blur:not(:has(~ *)) {
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+}
+
+/* Alternativa 1: Fondo con gradiente sutil */
+@keyframes blurGradient {
+  to {
+    box-shadow:
+      0 4px 30px rgba(0, 0, 0, 0.08),
+      0 1px 0 rgba(21, 128, 61, 0.1) inset;
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0.98),
+      rgba(248, 250, 252, 0.95)
+    );
+    backdrop-filter: blur(24px) saturate(120%);
+    -webkit-backdrop-filter: blur(24px) saturate(120%);
+    border-bottom: 1px solid rgba(21, 128, 61, 0.15);
+  }
+}
+
+/* Alternativa 2: Fondo blanco con tinte verde muy sutil */
+@keyframes blurWhiteGreen {
+  to {
+    box-shadow:
+      0 4px 25px rgba(0, 0, 0, 0.06),
+      0 2px 15px rgba(21, 128, 61, 0.08);
+    background: rgba(
+      248,
+      255,
+      250,
+      0.96
+    ); /* Blanco con tinte verde muy sutil */
+    backdrop-filter: blur(30px) saturate(140%);
+    -webkit-backdrop-filter: blur(30px) saturate(140%);
+    border-bottom: 1px solid rgba(21, 128, 61, 0.12);
   }
 }
 
